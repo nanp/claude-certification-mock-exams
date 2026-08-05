@@ -1,0 +1,493 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CCAR-P Mock Exam</title>
+<style>
+  :root{
+    --ink:#0E141C; --panel:#161F2B; --panel2:#1C2836; --line:#28374A;
+    --text:#DCE4EE; --muted:#8497AD; --dim:#5D6E82;
+    --accent:#59B9FF; --accent-dim:#2C6E9E;
+    --pass:#43D9A3; --fail:#F0736B; --flag:#F5B84C;
+    --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+    --sans:"Inter",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  }
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;450;500;600;700&display=swap');
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:var(--ink);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:860px;margin:0 auto;padding:32px 20px 96px}
+  .mono{font-family:var(--mono)}
+  h1,h2,h3{margin:0;font-weight:600;letter-spacing:-.01em}
+  a{color:var(--accent)}
+  button{font-family:inherit;cursor:pointer;border:none}
+  .btn{background:var(--accent);color:#04121D;font-weight:600;padding:12px 22px;border-radius:8px;font-size:15px;transition:.15s}
+  .btn:hover{filter:brightness(1.08)}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  .btn.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+  .btn.ghost:hover{border-color:var(--accent);color:var(--accent)}
+  .tag{font-family:var(--mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);border:1px solid var(--accent-dim);padding:3px 8px;border-radius:5px;display:inline-block}
+  .hide{display:none!important}
+
+  /* start */
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+  .hero-code{font-family:var(--mono);font-size:56px;font-weight:600;letter-spacing:-.02em;color:var(--text);margin:6px 0 2px}
+  .hero-sub{font-size:19px;color:var(--muted);max-width:640px;margin-top:10px}
+  .meta-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:28px 0}
+  .meta-grid div{background:var(--panel);padding:16px 14px}
+  .meta-grid .k{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim)}
+  .meta-grid .v{font-size:22px;font-weight:600;margin-top:4px}
+  .weights{margin:26px 0}
+  .wrow{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+  .wrow:last-child{border-bottom:none}
+  .wbar{height:7px;background:var(--panel2);border-radius:4px;overflow:hidden;margin-top:6px}
+  .wbar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent-dim),var(--accent))}
+  .wpct{font-family:var(--mono);color:var(--muted);font-size:13px}
+  .modes{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}
+  .mode{flex:1;min-width:220px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px}
+  .mode h3{font-size:16px;margin-bottom:6px}
+  .mode p{color:var(--muted);font-size:13.5px;margin:0 0 14px}
+
+  /* exam header */
+  .exam-bar{position:sticky;top:0;z-index:20;background:rgba(14,20,28,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);margin:-32px -20px 24px;padding:14px 20px;display:flex;align-items:center;gap:16px;justify-content:space-between}
+  .prog{flex:1}
+  .prog .lab{font-family:var(--mono);font-size:12px;color:var(--muted);display:flex;justify-content:space-between;margin-bottom:6px}
+  .track{height:5px;background:var(--panel2);border-radius:3px;overflow:hidden}
+  .track i{display:block;height:100%;background:var(--accent);transition:width .3s}
+  .timer{font-family:var(--mono);font-size:20px;font-weight:600;color:var(--text);min-width:96px;text-align:right}
+  .timer.warn{color:var(--flag)}
+  .timer.crit{color:var(--fail)}
+
+  /* question */
+  .qhead{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+  .qnum{font-family:var(--mono);font-size:13px;color:var(--dim)}
+  .scen{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold,#F5B84C);margin-bottom:8px;font-weight:600}
+  .ostep{display:flex;align-items:center;gap:12px;padding:11px 14px;border:1px solid var(--line);border-radius:9px;margin-bottom:8px;background:#121a24}
+  .ostep.correct{border-color:var(--pass)}
+  .onum{font-family:var(--mono);font-size:13px;color:var(--accent);min-width:20px;text-align:center}
+  .omove{margin-left:auto;display:flex;gap:6px}
+  .omove button{background:#1a2430;color:#e8eef5;border:1px solid var(--line);border-radius:6px;width:30px;height:30px;cursor:pointer;font-size:12px;line-height:1}
+  .omove button:disabled{opacity:.3;cursor:not-allowed}
+  .qtext{font-size:19px;line-height:1.5;font-weight:500;margin-bottom:6px}
+  .qhint{font-family:var(--mono);font-size:12px;color:var(--flag);margin-bottom:18px}
+  .opts{display:flex;flex-direction:column;gap:10px}
+  .opt{display:flex;gap:13px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:14px 16px;transition:.12s}
+  .opt:hover{border-color:var(--accent-dim)}
+  .opt.sel{border-color:var(--accent);background:var(--panel2)}
+  .opt .mark{flex:0 0 24px;height:24px;border:1.5px solid var(--dim);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:1px}
+  .opt.multi .mark{border-radius:6px}
+  .opt.sel .mark{border-color:var(--accent);background:var(--accent);color:#04121D;font-weight:600}
+  .opt .otext{flex:1}
+  /* review states */
+  .opt.correct{border-color:var(--pass);background:rgba(67,217,163,.08)}
+  .opt.correct .mark{border-color:var(--pass);background:var(--pass);color:#04121D}
+  .opt.wrong{border-color:var(--fail);background:rgba(240,115,107,.08)}
+  .opt.wrong .mark{border-color:var(--fail);background:var(--fail);color:#fff}
+  .opt.locked{pointer-events:none}
+  .expl{margin-top:16px;border-left:3px solid var(--accent-dim);background:var(--panel);padding:14px 16px;border-radius:0 8px 8px 0}
+  .expl .el{font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
+  .expl p{margin:0;color:var(--muted);font-size:14px}
+
+  .nav{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:28px}
+  .flagbtn{background:transparent;border:1px solid var(--line);color:var(--muted);padding:9px 14px;border-radius:8px;font-size:13px;font-family:var(--mono)}
+  .flagbtn.on{border-color:var(--flag);color:var(--flag)}
+
+  /* navigator grid */
+  .navgrid{display:grid;grid-template-columns:repeat(12,1fr);gap:7px;margin:22px 0}
+  .navgrid button{aspect-ratio:1;border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:6px;font-family:var(--mono);font-size:12px}
+  .navgrid button.done{border-color:var(--accent-dim);color:var(--text);background:var(--panel2)}
+  .navgrid button.flagged{border-color:var(--flag);color:var(--flag)}
+  .navgrid button.cur{outline:2px solid var(--accent);outline-offset:1px}
+
+  /* results */
+  .score-hero{text-align:center;padding:36px 0 8px}
+  .score-num{font-family:var(--mono);font-size:84px;font-weight:600;line-height:1}
+  .score-num.pass{color:var(--pass)} .score-num.fail{color:var(--fail)}
+  .score-den{font-family:var(--mono);font-size:22px;color:var(--dim)}
+  .verdict{font-size:22px;font-weight:600;margin-top:10px}
+  .verdict.pass{color:var(--pass)} .verdict.fail{color:var(--fail)}
+  .score-meta{color:var(--muted);margin-top:6px;font-family:var(--mono);font-size:13px}
+  .dbreak{margin:30px 0}
+  .drow{padding:12px 0;border-bottom:1px solid var(--line)}
+  .drow .top{display:flex;justify-content:space-between;font-size:14px;margin-bottom:7px}
+  .drow .dn{color:var(--muted);font-family:var(--mono);font-size:12px}
+  .dbar{height:8px;background:var(--panel2);border-radius:4px;overflow:hidden}
+  .dbar i{display:block;height:100%}
+  .rev-head{display:flex;justify-content:space-between;align-items:center;margin:34px 0 10px}
+  .footer{color:var(--dim);font-size:12px;line-height:1.7;margin-top:40px;border-top:1px solid var(--line);padding-top:18px}
+  @media(max-width:620px){
+    .meta-grid{grid-template-columns:repeat(2,1fr)}
+    .hero-code{font-size:42px}
+    .navgrid{grid-template-columns:repeat(8,1fr)}
+    .score-num{font-size:64px}
+  }
+</style>
+
+<div class="wrap">
+  <!-- ============ START ============ -->
+  <section id="start">
+    <div class="eyebrow">Anthropic · Claude Partner Network · Unofficial practice</div>
+    <div class="hero-code" id="exCode">CCAR-P</div>
+    <h1 style="font-size:24px;font-weight:600" id="exTitle">Claude Certified Architect — Professional</h1>
+    <p class="hero-sub" id="exSub">Sixty-three questions across the seven domains of the official blueprint, in the exam's architecture and trade-off style. Scaled scoring out of 1,000; 720 to pass.</p>
+
+    <div class="meta-grid">
+      <div><div class="k">Questions</div><div class="v" id="mQ">60</div></div>
+      <div><div class="k">Time limit</div><div class="v" id="mT">120 min</div></div>
+      <div><div class="k">Pass score</div><div class="v">720</div></div>
+      <div><div class="k">Scale</div><div class="v">100–1000</div></div>
+    </div>
+
+    <h3 style="font-size:15px;margin-bottom:4px">Domain weighting</h3>
+    <div class="weights" id="weights"></div>
+
+    <div class="modes">
+      <div class="mode">
+        <h3>Timed exam</h3>
+        <p id="exTimedP">All 60 questions, 120-minute countdown, answers hidden until you submit — the real sitting.</p>
+        <button class="btn" onclick="start(true)">Start timed exam</button>
+      </div>
+      <div class="mode">
+        <h3>Study mode</h3>
+        <p>No clock. Feedback and explanation reveal the moment you answer each question.</p>
+        <button class="btn ghost" onclick="start(false)">Start study mode</button>
+      </div>
+    </div>
+
+    <div class="footer" id="exFoot">
+      Independent study material, not affiliated with or endorsed by Anthropic. Questions are original and written against the published domain structure and the objective list on the official score report; they are not reproductions of live exam items. Real exam format per Exam Guide v1.0 (July 2026): 60 questions, 120 minutes, scaled 100–1000, 720 to pass, delivered via Pearson VUE.
+    </div>
+  </section>
+
+  <!-- ============ EXAM ============ -->
+  <section id="exam" class="hide">
+    <div class="exam-bar">
+      <div class="prog">
+        <div class="lab"><span id="progLab">Question 1 of 60</span><span id="answeredLab">0 answered</span></div>
+        <div class="track"><i id="progFill" style="width:0"></i></div>
+      </div>
+      <div class="timer" id="timer">120:00</div>
+    </div>
+
+    <div id="qbody"></div>
+
+    <div class="nav">
+      <button class="btn ghost" id="prevBtn" onclick="go(-1)">← Previous</button>
+      <button class="flagbtn" id="flagBtn" onclick="toggleFlag()">⚑ Flag</button>
+      <button class="btn" id="nextBtn" onclick="go(1)">Next →</button>
+    </div>
+
+    <div class="navgrid" id="navgrid"></div>
+    <div style="text-align:center">
+      <button class="btn" id="submitBtn" onclick="submitExam()">Submit exam</button>
+    </div>
+  </section>
+
+  <!-- ============ RESULTS ============ -->
+  <section id="results" class="hide">
+    <div class="score-hero">
+      <div class="eyebrow" id="exEyebrow2">Score report · CCAR-F practice</div>
+      <div class="score-num mono" id="scoreNum">—</div>
+      <div class="score-den">/ 1000 &nbsp;·&nbsp; pass 720</div>
+      <div class="verdict" id="verdict"></div>
+      <div class="score-meta" id="scoreMeta"></div>
+    </div>
+    <h3 style="font-size:15px">Test objectives — percent correct by domain</h3>
+    <div class="dbreak" id="dbreak"></div>
+    <div class="rev-head">
+      <h3 style="font-size:17px" id="exRevHead">Review all 60 questions</h3>
+      <button class="btn ghost" onclick="location.reload()">Retake</button>
+    </div>
+    <div id="reviewBody"></div>
+  </section>
+</div>
+
+<script>
+const EXAM = {"code":"CCAR-P","title":"Claude Certified Architect — Professional","items":63,"minutes":120,"sub":"Sixty-three questions across the seven domains of the official blueprint, in the exam's architecture and trade-off style. Scaled scoring out of 1,000; 720 to pass.","foot":"Independent study material, not affiliated with or endorsed by Anthropic. Questions are original and written against the published domain blueprint and objectives; they are not reproductions of live exam items. Real exam format per Exam Guide v1.0 (July 2026): 63 questions, 120 minutes, scaled 100–1000, 720 to pass, exam fee $175 USD, delivered via Pearson VUE."};
+/* ---------- DOMAINS ---------- */
+const DOMAINS = [{"id":"D1","name":"Solution Design & Architecture","weight":17,"color":"#59B9FF"},{"id":"D2","name":"Claude Models, Prompting & Context","weight":13,"color":"#43D9A3"},{"id":"D3","name":"Integration","weight":19,"color":"#C08CFF"},{"id":"D4","name":"Evaluation, Testing & Optimization","weight":16,"color":"#F5B84C"},{"id":"D5","name":"Governance, Safety & Risk","weight":14,"color":"#F0736B"},{"id":"D6","name":"Stakeholder Communication & Lifecycle","weight":14,"color":"#7FD1FF"},{"id":"D7","name":"Developer Productivity & Ops Enablement","weight":7,"color":"#E8B4FF"}];
+const SCEN = {};
+
+/* ---------- QUESTIONS ----------
+   opts: array of strings. answer: index (single) or array of indices (multi).
+   multi:true renders checkboxes and requires the exact set.
+*/
+const Q = [{"d": "D1", "q": "A business wants to classify inbound emails into a fixed set of categories at high volume with predictable steps. Which architecture pattern fits best?", "opts": ["A deterministic workflow with a single classification step", "A fully autonomous multi-agent system with open-ended tool use", "An agent that decides its own steps for every email", "A human-in-the-loop review of every single email"], "a": 0, "e": "Predictable, well-scoped tasks fit a simple workflow; reserving agentic autonomy for open-ended problems avoids unnecessary complexity and cost."}, {"d": "D1", "q": "When does an agentic architecture become the appropriate choice over a fixed workflow?", "opts": ["When the path depends on intermediate findings and cannot be scripted in advance", "When the task is a single deterministic transformation", "When latency must be as low as physically possible", "When you simply want to use the newest feature"], "a": 0, "e": "Agents earn their complexity when the solution path is dynamic and depends on what is discovered at each step, unlike scriptable workflows."}, {"d": "D1", "q": "You are designing an end-to-end system. Which element is most often overlooked but essential for sustained quality?", "opts": ["A feedback/evaluation loop that measures and improves outputs over time", "A larger context window on the model", "A single acceptance test run once at launch", "Storing every raw response indefinitely"], "a": 0, "e": "Robust end-to-end designs include feedback and evaluation loops (input to processing to output to feedback) so quality can be monitored and improved."}, {"d": "D1", "q": "A coordinator delegates to specialized subagents. What is the coordinator's core responsibility?", "opts": ["Decompose the task, route work, aggregate results, and handle errors centrally", "Let subagents call each other directly to move faster", "Hold every tool itself and never delegate", "Duplicate each subagent's work to be safe"], "a": 0, "e": "In coordinator-subagent (hub-and-spoke) designs, the coordinator owns decomposition, routing, aggregation, and error handling for observability and control."}, {"d": "D1", "q": "A complex problem spans several distinct sub-questions with different data needs. What is a sound design approach?", "opts": ["Decompose it into focused sub-tasks and compose their results", "Send one enormous prompt covering everything at once", "Pick only the easiest sub-question and ignore the rest", "Randomly split the work with overlapping scopes"], "a": 0, "e": "Decomposition into focused sub-tasks improves coverage and quality over a single monolithic prompt, and avoids wasteful overlap."}, {"d": "D1", "q": "Leadership wants the solution justified against business value. Which framing is most appropriate?", "opts": ["Tie the design to efficiency, cost, and performance/SLA outcomes it enables", "Justify it purely by which model is newest", "Emphasize technical novelty over business impact", "Avoid discussing cost to keep the pitch simple"], "a": 0, "e": "Architecture should map to business value pillars — efficiency, transformation, productivity, cost, and performance SLAs."}, {"d": "D1", "q": "You are designing an end-to-end Claude solution. The steps below are listed out of order:<ol style=\"margin:10px 0 6px 22px;padding:0\"><li>Select an architecture pattern (workflow, agentic, augmented LLM)</li><li>Add evaluation and feedback loops</li><li>Gather requirements from the business problem</li><li>Design the data and context flow</li><li>Plan for scale and SLA targets</li></ol>In which order should they be carried out?", "opts": ["3 → 1 → 4 → 2 → 5", "1 → 3 → 4 → 2 → 5", "3 → 1 → 4 → 5 → 2", "3 → 4 → 1 → 2 → 5"], "a": 0, "e": "Design flows from requirements, to pattern selection, to the data and context flow, to evaluation and feedback loops, to scale and SLA planning. Choosing a pattern before requirements, or designing data flow before the pattern, inverts the dependencies."}, {"d": "D1", "q": "A task needs the model to consult a large private knowledge base it was never trained on. Which pattern fits?", "opts": ["An augmented-LLM pattern using retrieval over the knowledge base", "Fine-tuning the model on every document nightly", "A plain prompt with no access to the knowledge base", "Pasting the entire knowledge base into every request"], "a": 0, "e": "Augmenting the LLM with retrieval gives access to private, changing knowledge without retraining or exhausting the context window."}, {"d": "D1", "multi": true, "q": "Which two properties characterize a well-designed end-to-end Claude architecture? (Select two.)", "opts": ["Clear separation of stages with defined inputs and outputs", "A feedback loop that enables monitoring and iterative improvement", "Maximal tool access for every component regardless of role", "A single giant prompt that handles all concerns at once"], "a": [0, 1], "e": "Good designs separate stages cleanly and include feedback loops; broad tool access and monolithic prompts increase risk and cost."}, {"d": "D1", "q": "A system must handle both simple FAQs and rare complex investigations. What design balances cost and capability?", "opts": ["Route simple cases through a lightweight path and escalate complex ones", "Run the heaviest agentic path for every request", "Handle only the simple cases and drop the complex ones", "Use one fixed prompt for everything regardless of complexity"], "a": 0, "e": "Tiered routing matches effort to complexity, controlling cost while preserving capability for the hard cases."}, {"d": "D1", "q": "The business commits to a strict latency SLA for a user-facing feature. How should this shape the architecture?", "opts": ["Favor patterns and models that meet the latency budget, trading some depth if needed", "Ignore latency and optimize only for maximum quality", "Add more sequential agent hops to be thorough", "Assume the fastest model always fits regardless of task"], "a": 0, "e": "Aligning to a performance SLA means designing within the latency budget, accepting justified trade-offs rather than unbounded depth."}, {"d": "D2", "q": "An app sends the same 8,000-token system prompt and policy on every request, followed by a short varying user message. Latency and cost both matter. Which optimization helps most?", "opts": ["Place the stable content first and enable prompt caching", "Truncate the policy document to its first 1,000 tokens", "Switch to the smallest model regardless of task fit", "Move the policy into a few-shot example block"], "a": 0, "e": "Ordering stable content first and enabling prompt caching reuses the repeated prefix, cutting time-to-first-token and per-request cost without discarding required context."}, {"d": "D2", "q": "You must choose between Opus, Sonnet, and Haiku for a latency-sensitive, moderate-complexity feature. What drives the decision?", "opts": ["The trade-off among quality, latency, and cost for this specific task", "Always choosing the largest model available", "Always choosing the smallest model available", "Whichever model was released most recently"], "a": 0, "e": "Model selection is a deliberate quality/latency/cost trade-off matched to the task, not a default to the biggest or newest option."}, {"d": "D2", "q": "You want to enforce that the assistant never reveals internal pricing logic. Where does this belong?", "opts": ["In a system prompt with explicit guardrails on disallowed content", "In a user message sent occasionally", "In a few-shot example only", "Nowhere; rely on the model's defaults"], "a": 0, "e": "Behavioral constraints and guardrails belong in the system prompt, applied consistently rather than intermittently."}, {"d": "D2", "q": "A reasoning-heavy extraction task gives inconsistent results from a terse instruction. Which technique most improves it?", "opts": ["Add few-shot examples and, where useful, chain-of-thought structure", "Shorten the instruction further to reduce tokens", "Raise temperature to encourage variety", "Remove all examples to keep the prompt clean"], "a": 0, "e": "Few-shot examples and chain-of-thought guide complex reasoning far better than terse instructions or higher randomness."}, {"d": "D2", "q": "Context windows are filling with verbose tool output on long tasks. What is a sound context-engineering response?", "opts": ["Prune tool outputs to relevant fields and compact history periodically", "Keep appending everything and switch to a bigger window only", "Randomly drop messages when the window is full", "Restart from scratch on every turn"], "a": 0, "e": "Managing token usage means trimming verbose outputs and compacting, not merely enlarging the window or dropping context blindly."}, {"d": "D2", "q": "Several applications reuse the same complex analysis prompt. How can you manage it efficiently?", "opts": ["Factor it into a reusable, modular prompt or Skill shared across apps", "Copy-paste and hand-edit it in each app separately", "Rewrite it from memory each time it is needed", "Inline it differently in every codebase"], "a": 0, "e": "Prompt reuse via modular prompts or Skills keeps behavior consistent and maintainable across applications."}, {"d": "D2", "multi": true, "q": "Which two techniques reduce token cost without discarding needed context? (Select two.)", "opts": ["Enable prompt caching for a large repeated prefix", "Trim verbose tool outputs to only the fields you use", "Truncate required policy text arbitrarily", "Blindly switch to the smallest model for every task"], "a": [0, 1], "e": "Caching repeated prefixes and trimming irrelevant tool output cut cost while preserving needed context; arbitrary truncation and blind downsizing risk quality."}, {"d": "D2", "q": "Why does the order of static versus dynamic content matter when using prompt caching?", "opts": ["Stable content placed first can be cached and reused across requests", "Dynamic content must always come first for correctness", "Ordering has no effect on caching at all", "Caching only works if the whole prompt changes each time"], "a": 0, "e": "Caching reuses stable prefixes, so placing static content before dynamic content maximizes the cacheable portion."}, {"d": "D3", "q": "A support agent can read tickets, draft replies, issue refunds, and delete accounts, but staff only ever read and draft. Applying least privilege, what best reduces risk?", "opts": ["Remove the refund and delete tools from the agent's configuration", "Add logging to the refund and delete tools for later auditing", "Keep all tools but add a confirmation prompt before refunds and deletions", "Replace the agent with a larger, more instruction-following model"], "a": 0, "e": "Least privilege removes capabilities the role does not need, eliminating the attack surface. Logging and confirmations are detective/compensating controls, and model size is unrelated to authorization scope."}, {"d": "D3", "q": "An agent has accumulated many overlapping tools and now mis-selects among them. What is the core problem to address?", "opts": ["Capability bloat — too many/overlapping tools degrade selection", "The model temperature is too low", "The context window is too large", "There are not enough tools available"], "a": 0, "e": "Evaluating for capability bloat matters: excessive or overlapping tools raise decision complexity and reduce selection reliability."}, {"d": "D3", "q": "A service exposes one API key shared by all callers with full scope. What is the security gap?", "opts": ["No per-caller authentication/authorization or least-privilege scoping", "The key is too long to be practical", "There are too few callers to matter", "Keys never need rotation once issued"], "a": 0, "e": "Analyzing authN/authZ reveals the gap: a single over-scoped shared credential violates least privilege and prevents per-caller control."}, {"d": "D3", "q": "A feature can use a slower, more accurate retrieval step or a faster, less accurate one. How should you decide?", "opts": ["Weigh the accuracy-latency trade-off against the task's requirements and SLA", "Always pick the fastest option regardless of accuracy", "Always pick the most accurate option regardless of latency", "Decide at random to avoid bias"], "a": 0, "e": "Configuration decisions should justify the accuracy-latency trade-off against the specific task needs and SLA."}, {"d": "D3", "q": "A high-traffic multi-step agent is hard to debug in production. Which strategy most helps?", "opts": ["Structured tracing/observability across steps with correlation of requests", "Removing all logging to reduce noise", "Relying on users to report every failure", "Only checking logs after a major outage"], "a": 0, "e": "Observability at scale requires structured tracing that correlates steps and requests, enabling diagnosis before failures compound."}, {"d": "D3", "q": "You are designing RAG over long technical manuals with cross-references. What chunking approach is most appropriate?", "opts": ["Chunk on logical/semantic boundaries with enough overlap to preserve context", "Split strictly every N characters ignoring structure", "Index each entire manual as a single chunk", "Never chunk; always pass whole documents"], "a": 0, "e": "Effective RAG chunks on semantic boundaries with sensible overlap so retrieved units are coherent and self-contained."}, {"d": "D3", "q": "Queries are mostly exact-keyword lookups against structured records. Which retrieval strategy fits best?", "opts": ["Match the strategy to the data shape — keyword/structured retrieval here, not only vector search", "Force dense vector search for every query regardless of shape", "Skip retrieval and rely on the model's memory", "Return all records and let the model filter everything"], "a": 0, "e": "Retrieval strategy should match data shape and query pattern; keyword/structured lookups need not be forced through vector search."}, {"d": "D3", "q": "You must connect Claude to an internal tool that many applications will reuse and that should be maintained independently. Which integration mechanism fits best?", "opts": ["An MCP server exposing the capability as reusable tools", "Hard-coding the logic into each application's prompt", "A one-off script copied into every app", "Pasting the tool's data into context each request"], "a": 0, "e": "MCP exposes reusable, independently maintained tools multiple applications can share, unlike hard-coded or copied logic."}, {"d": "D3", "q": "An agent wastes calls exploring a huge catalog it cannot see. What integration strategy helps?", "opts": ["Progressive discovery: expose a catalog/resource so the agent sees what exists before fetching", "Load the entire dataset into the context on every call", "Give the agent no visibility and let it guess", "Split the catalog into hundreds of tools"], "a": 0, "e": "Progressive discovery (exposing what is available) beats a monolithic context dump or blind exploration for large, browsable data."}, {"d": "D3", "q": "You are building a RAG pipeline over a document corpus. The steps below are listed out of order:<ol style=\"margin:10px 0 6px 22px;padding:0\"><li>Retrieve the top-k chunks for a query</li><li>Chunk the documents on sensible boundaries</li><li>Assemble the retrieved context and generate the answer</li><li>Ingest and clean the source documents</li><li>Embed and index the chunks</li></ol>In which order should they be carried out?", "opts": ["4 → 2 → 5 → 1 → 3", "4 → 5 → 2 → 1 → 3", "2 → 4 → 5 → 1 → 3", "4 → 2 → 5 → 3 → 1"], "a": 0, "e": "A RAG pipeline ingests and cleans, chunks on sensible boundaries, embeds and indexes, retrieves the top-k for a query, then assembles the context and generates the answer. Indexing before chunking, or generating before retrieving, is out of order."}, {"d": "D3", "multi": true, "q": "Which two measures reflect least-privilege, secure integration? (Select two.)", "opts": ["Remove tools a role does not need from the agent's configuration", "Scope credentials per caller with only the permissions required", "Give every agent full access and monitor after the fact", "Share one high-privilege key across all integrations"], "a": [0, 1], "e": "Removing unneeded tools and scoping per-caller credentials embody least privilege; broad access with after-the-fact monitoring and shared keys do not."}, {"d": "D3", "q": "For a large-scale deployment, how should you select a monitoring strategy?", "opts": ["Choose metrics and tracing that surface failures and drift at production scale", "Rely on manual spot checks only", "Monitor cost but never quality", "Turn on every possible metric without a plan"], "a": 0, "e": "Monitoring should be chosen deliberately to reveal failures and drift at scale, balancing coverage against noise."}, {"d": "D4", "q": "A RAG system suddenly returns confident but wrong answers right after a document refresh; latency and model version are unchanged. Where should you investigate first?", "opts": ["The retrieval/indexing step returning irrelevant or stale chunks", "Silently changed model weights", "A temperature setting that is too low", "A shrunken context window"], "a": 0, "e": "Confident-but-wrong answers following a document refresh, with model and latency unchanged, point to retrieval feeding poor context — for example a broken re-index or mismatched embeddings."}, {"d": "D4", "q": "You are standing up evaluation for a new Claude feature. What should you define first?", "opts": ["Metrics tied to the goal — accuracy, latency, cost, and safety as relevant", "The target hosting region and infrastructure", "The rollout and communication plan", "The logging backend that will store traces"], "a": 0, "e": "Evaluation starts with defining metrics that reflect the system's goals, such as accuracy, latency, cost, and safety."}, {"d": "D4", "q": "What makes an evaluation dataset trustworthy for a production system?", "opts": ["It represents real inputs and edge cases, using mixed methods where needed", "It contains only the easiest inputs", "It is as small as possible to save time", "It reuses the exact examples from the prompt"], "a": 0, "e": "Good eval datasets represent realistic inputs and edge cases and combine methodologies; trivial or leaked examples give false confidence."}, {"d": "D4", "q": "You want to know whether a new prompt truly improves quality. What is the soundest method?", "opts": ["An A/B test comparing the variants on the same representative inputs", "Shipping it and asking if anyone complains", "Judging by which output feels nicer once", "Comparing them on different, unrelated inputs"], "a": 0, "e": "A/B testing on the same representative inputs isolates the effect of the change, unlike anecdote or mismatched comparisons."}, {"d": "D4", "q": "Outputs are wrong in a way that looks like the model misunderstands the domain, not a formatting slip. How do you distinguish the cause?", "opts": ["Trace whether it is a prompt failure, a model mismatch, or a hallucination pattern", "Assume it is always the model and swap it immediately", "Assume it is always the prompt and rewrite everything", "Ignore it since some errors are unavoidable"], "a": 0, "e": "Diagnosis distinguishes prompt failure, model mismatch, and hallucination so the fix targets the real cause."}, {"d": "D4", "q": "A pipeline is over budget on tokens. Which optimization is most principled?", "opts": ["Profile where tokens go, then trim context and cache repeated prefixes", "Randomly cut the prompt until it is cheaper", "Switch to the biggest model to finish faster", "Stop measuring cost to avoid the stress"], "a": 0, "e": "Optimizing cost starts by measuring where tokens are spent, then trimming context and caching, rather than guessing or upsizing."}, {"d": "D4", "q": "How should production performance be monitored after launch?", "opts": ["Continuous logging and observability with alerts on quality and cost drift", "A single check at launch and never again", "Only user complaints as the signal", "Only the total invoice at month end"], "a": 0, "e": "Ongoing logging and observability with drift alerts catch regressions early, unlike one-time or purely reactive checks."}, {"d": "D4", "q": "You are diagnosing a production quality regression. The steps below are listed out of order:<ol style=\"margin:10px 0 6px 22px;padding:0\"><li>Form a hypothesis about the cause</li><li>Reproduce the failing behavior</li><li>Isolate the layer (retrieval, prompt, or model)</li><li>Monitor to confirm the fix holds</li><li>Test a targeted fix</li></ol>In which order should they be carried out?", "opts": ["2 → 3 → 1 → 5 → 4", "3 → 2 → 1 → 5 → 4", "2 → 1 → 3 → 5 → 4", "2 → 3 → 1 → 4 → 5"], "a": 0, "e": "Diagnosis reproduces the failure, isolates the layer, forms a hypothesis, tests a targeted fix, then monitors to confirm it holds. Isolating before reproducing, or hypothesising before isolating, skips the evidence each step provides."}, {"d": "D4", "multi": true, "q": "Which two metrics are appropriate for evaluating a production LLM system? (Select two.)", "opts": ["Accuracy or task success rate on representative inputs", "Latency and cost per request", "The average system-prompt token count per request", "The number of tools registered on the agent"], "a": [0, 1], "e": "Task success and latency/cost are meaningful production metrics; prompt length and naming order are not quality measures."}, {"d": "D4", "q": "After an eval reveals weak spots, what is the right posture?", "opts": ["Iterate: adjust prompts, retrieval, or model and re-measure against the metrics", "Declare the system done since it mostly works", "Delete the failing test cases to raise the score", "Ship and hope the weak spots are rare"], "a": 0, "e": "Evaluation feeds iterative improvement measured against defined metrics, not score-gaming or shipping past known gaps."}, {"d": "D5", "q": "A user-facing agent could take an irreversible action on a user's account. What guardrail design is soundest?", "opts": ["Require a deterministic check or human approval before the irreversible action", "Rely on a polite system-prompt request not to make mistakes", "Allow it freely and review logs monthly", "Trust a larger model to never err"], "a": 0, "e": "Safety controls for irreversible actions use deterministic gates or human-in-the-loop approval, not probabilistic prompt requests."}, {"d": "D5", "q": "Which is a genuine failure mode of LLM systems a design must account for?", "opts": ["Confident hallucination of facts not present in the sources", "Guaranteed correctness on every input", "Immunity to prompt injection by default", "Perfect calibration of self-reported confidence"], "a": 0, "e": "Identifying failure modes — such as hallucination — is essential; LLMs are not guaranteed correct, injection-proof, or well-calibrated by default."}, {"d": "D5", "q": "For a high-stakes medical triage assistant, where should human review sit?", "opts": ["A human validates before any consequential action or advice is delivered", "No human review, to maximize speed", "Human review only of a random 1% sample", "Human review only after complaints arrive"], "a": 0, "e": "Human-in-the-loop validation belongs before consequential outcomes in high-stakes domains, not as a rare or purely reactive check."}, {"d": "D5", "q": "A system will process EU residents' personal data. Which consideration is essential in the design?", "opts": ["Compliance with applicable regulations such as GDPR, including data handling and consent", "Ignoring regulation since it is an internal tool", "Storing all raw data indefinitely for convenience", "Assuming compliance is only a legal-team concern post-launch"], "a": 0, "e": "Architects must build in regulatory compliance (e.g., GDPR/HIPAA/FedRAMP as applicable) rather than treating it as an afterthought."}, {"d": "D5", "q": "Stakeholders worry the model may produce biased outcomes for certain groups. What is the responsible design response?", "opts": ["Evaluate for bias/fairness and add transparency and mitigations where needed", "Assume bias is impossible with a good model", "Avoid measuring it to prevent bad news", "Disclose nothing to keep trust high"], "a": 0, "e": "Addressing ethical AI means measuring bias/fairness and improving transparency and mitigations, not ignoring or hiding the issue."}, {"d": "D5", "q": "An agent summarizes user-submitted web pages; one page hides text telling it to exfiltrate data. What mitigation is most effective?", "opts": ["Treat retrieved content as untrusted, isolate it from instructions, and gate sensitive actions", "Raise temperature so behavior is less predictable", "Ask users politely not to include malicious text", "Switch to a more instruction-following model"], "a": 0, "e": "Prompt injection is mitigated by isolating untrusted content from trusted instructions and enforcing least-privilege guardrails; a more instruction-following model can be more susceptible, not less."}, {"d": "D5", "multi": true, "q": "Which two are effective guardrail layers for a production agent? (Select two.)", "opts": ["Deterministic checks that block disallowed actions before execution", "Least-privilege scoping so the agent lacks unneeded capabilities", "A system-prompt line asking the model to behave", "Higher temperature to add unpredictability"], "a": [0, 1], "e": "Deterministic pre-execution checks and least-privilege scoping are enforceable layers; a prompt request and added randomness are not controls."}, {"d": "D5", "q": "A team proposes fully automating a decision that has legal consequences. What is the risk-aware recommendation?", "opts": ["Keep a human in the loop for the consequential decision and automate the support work", "Automate the decision fully to cut headcount", "Automate it and disclaim all responsibility", "Automate it but only on weekends"], "a": 0, "e": "Over-automating high-stakes, legally consequential decisions is a risk; keep human oversight on the decision while automating support tasks."}, {"d": "D5", "q": "A design will handle PII across regions with differing rules. What should the architecture ensure?", "opts": ["Appropriate data handling, minimization, and residency aligned to each region's rules", "One global policy that ignores regional differences", "Collecting more PII than needed for flexibility", "Storing PII in plaintext for easy access"], "a": 0, "e": "Handling PII responsibly requires minimization and region-appropriate data handling and residency, not maximal collection or plaintext storage."}, {"d": "D6", "q": "You are starting a new engagement with unclear goals. What should you do first?", "opts": ["Run structured discovery to gather requirements and define success", "Start building immediately to show momentum", "Pick an architecture before talking to stakeholders", "Assume last project's requirements apply here"], "a": 0, "e": "Lifecycle work begins with structured discovery and requirement gathering to align the solution with real needs."}, {"d": "D6", "q": "Executives ask why you chose retrieval over fine-tuning. How should you communicate the decision?", "opts": ["Explain the trade-offs in business terms — cost, freshness, maintainability", "Give a deeply technical answer with no business framing", "Say it is too complex to explain", "Avoid the question to save time"], "a": 0, "e": "Communicating architectural decisions means framing trade-offs in terms stakeholders care about, not opaque technical detail or evasion."}, {"d": "D6", "q": "A stakeholder expects 100% accuracy from the system. What is the right move?", "opts": ["Reset expectations with realistic accuracy ranges and where human review applies", "Promise 100% to keep them happy", "Ignore the expectation and hope for the best", "Blame the model if it later falls short"], "a": 0, "e": "Managing expectations and SLAs means setting realistic targets and clarifying where human validation is needed, before commitments are made."}, {"d": "D6", "q": "What belongs in the architecture documentation you hand off to an operations team?", "opts": ["The design, key decisions and trade-offs, and implementation/operational guidance", "Only a diagram with no explanation", "Marketing copy about the benefits", "Nothing; the code speaks for itself"], "a": 0, "e": "Effective handoff documents the architecture, the decisions and trade-offs behind it, and guidance for implementation and operation."}, {"d": "D6", "q": "A Claude solution moves through its delivery lifecycle. The steps below are listed out of order:<ol style=\"margin:10px 0 6px 22px;padding:0\"><li>Monitor</li><li>Discovery</li><li>Iterate</li><li>Design</li><li>Build and handoff</li></ol>In which order do the phases occur?", "opts": ["2 → 4 → 5 → 1 → 3", "2 → 4 → 5 → 3 → 1", "4 → 2 → 5 → 1 → 3", "2 → 5 → 4 → 1 → 3"], "a": 0, "e": "The lifecycle runs discovery, design, build and handoff, monitor, then iterate on what monitoring reveals. Designing before discovery, or iterating before monitoring, breaks the feedback loop."}, {"d": "D6", "q": "After launch, how should stakeholder feedback be handled?", "opts": ["Capture it in a feedback loop that informs prioritized iterations", "Treat launch as the end of the engagement", "Collect it but never act on it", "Act only on the loudest single complaint"], "a": 0, "e": "Lifecycle management maintains feedback loops that drive prioritized, ongoing iteration rather than ending at launch."}, {"d": "D6", "q": "You must align a cross-functional team (legal, security, product) on an architecture. What is most effective?", "opts": ["Communicate decisions and trade-offs in each group's terms and align on expectations", "Send only the technical spec to everyone", "Decide alone and inform them afterward", "Avoid the harder stakeholders to reduce friction"], "a": 0, "e": "Cross-functional alignment requires tailored communication of decisions and trade-offs and explicit expectation-setting."}, {"d": "D6", "q": "An executive audience needs to understand the system's limitations. How should you present them?", "opts": ["Plainly, with the mitigations and where human oversight applies", "Downplay them to protect the project", "Bury them in technical appendices", "Omit them entirely from the briefing"], "a": 0, "e": "Presenting limitations honestly, with mitigations and oversight points, builds trust and supports sound decisions."}, {"d": "D6", "q": "During discovery, a client describes symptoms but not underlying needs. What technique helps most?", "opts": ["Ask probing questions to surface the real requirements and constraints", "Accept the stated symptoms as the full requirements", "Propose a solution before understanding the problem", "Copy a solution from an unrelated client"], "a": 0, "e": "Structured requirement gathering probes beneath stated symptoms to the underlying needs and constraints."}, {"d": "D7", "q": "You want a whole engineering team to use Claude Code consistently on a shared repo. What enables that best?", "opts": ["Shared project configuration (e.g., CLAUDE.md and settings) committed to the repo", "Each developer configuring their own private setup only", "Verbal instructions passed around the team", "No configuration, relying on defaults everywhere"], "a": 0, "e": "Configuring team environments with shared, version-controlled project configuration makes AI-assisted workflows consistent across the team."}, {"d": "D7", "q": "How can AI-assisted tooling most improve a team's development workflow?", "opts": ["Automate repetitive tasks and speed reviews while keeping humans in control", "Replace code review entirely with no human involvement", "Force every change through the AI with no exceptions", "Add tooling that no one is trained to use"], "a": 0, "e": "AI tooling improves productivity by automating repetitive work and accelerating reviews while preserving human judgment."}, {"d": "D7", "q": "A production incident needs fast diagnosis. How can Claude Code support the team appropriately?", "opts": ["Help explore logs and code to isolate the likely cause, with engineers validating", "Auto-deploy an unreviewed fix straight to production", "Silence the alerts so the incident looks resolved", "Guess a fix without reproducing the issue"], "a": 0, "e": "AI can accelerate debugging and operational triage, but engineers validate before changes reach production."}, {"d": "D7", "multi": true, "q": "Which two practices support safe, productive team enablement of Claude Code? (Select two.)", "opts": ["Commit shared configuration so everyone works from the same standards", "Keep human review in the loop for changes reaching production", "Give every automation unrestricted production access", "Skip onboarding so the team can start faster"], "a": [0, 1], "e": "Shared configuration and retained human review enable teams safely; unrestricted access and skipped onboarding create risk."}];
+
+/* ---------- STATE ---------- */
+let cur=0, timed=true, remaining=EXAM.minutes*60, timerId=null, submitted=false;
+const answers = Q.map(()=>null);   // number | number[] | null
+const flags = Q.map(()=>false);
+const arrange = Q.map(()=>null);
+const touched = Q.map(()=>false);
+
+/* ---------- START SCREEN ---------- */
+const MAXW=Math.max(...DOMAINS.map(d=>d.weight));
+(function renderWeights(){
+  const el=document.getElementById('weights');
+  el.innerHTML = DOMAINS.map(d=>`
+    <div class="wrow">
+      <div>
+        <div style="font-size:14px">${d.name}</div>
+        <div class="wbar"><i style="width:${d.weight/MAXW*100}%;background:linear-gradient(90deg,${d.color}55,${d.color})"></i></div>
+      </div>
+      <div class="wpct">${d.weight}%</div>
+    </div>`).join('');
+})();
+
+/* Shuffle option order per session so there is no fixed position tell.
+   Remaps the correct-answer index/indices to the new order. */
+function shuffleOptions(){
+  Q.forEach(item=>{
+    if(item.type==='order') return;
+    const n=item.opts.length;
+    const order=[...Array(n).keys()];
+    for(let i=n-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]];}
+    item.opts=order.map(i=>item.opts[i]);
+    const back={}; order.forEach((old,neu)=>back[old]=neu);
+    item.a = Array.isArray(item.a) ? item.a.map(x=>back[x]).sort((a,b)=>a-b) : back[item.a];
+  });
+}
+
+function start(isTimed){
+  shuffleOptions();
+  Q.forEach((item,i)=>{ if(item.type==='order'){ const s=[...item.steps]; for(let k=s.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[s[k],s[j]]=[s[j],s[k]];} arrange[i]=s; } });
+  timed=isTimed;
+  document.getElementById('start').classList.add('hide');
+  document.getElementById('exam').classList.remove('hide');
+  buildNavGrid();
+  if(timed){ startTimer(); } else { document.getElementById('timer').textContent='study'; document.getElementById('timer').style.fontSize='15px'; }
+  render();
+  window.scrollTo(0,0);
+}
+
+function startTimer(){
+  const t=document.getElementById('timer');
+  timerId=setInterval(()=>{
+    remaining--;
+    const m=String(Math.floor(remaining/60)).padStart(2,'0');
+    const s=String(remaining%60).padStart(2,'0');
+    t.textContent=`${m}:${s}`;
+    t.classList.toggle('warn',remaining<=600&&remaining>120);
+    t.classList.toggle('crit',remaining<=120);
+    if(remaining<=0){ clearInterval(timerId); submitExam(); }
+  },1000);
+}
+
+/* ---------- QUESTION RENDER ---------- */
+function isMulti(i){ return !!Q[i].multi; }
+function isOrder(i){ return Q[i].type==='order'; }
+function isAnswered(i){
+  if(isOrder(i)) return touched[i];
+  const a=answers[i];
+  if(a===null) return false;
+  return isMulti(i) ? a.length>0 : true;
+}
+function letter(n){ return String.fromCharCode(65+n); }
+
+function render(){
+  const item=Q[cur];
+  const dom=DOMAINS.find(d=>d.id===item.d);
+  const a=answers[cur];
+  const reveal = !timed && isAnswered(cur); // study mode reveals after answering
+
+  let bodyInner;
+  if(isOrder(cur)){
+    const seq = arrange[cur] || item.steps;
+    const rev = !timed && touched[cur];
+    const rows = seq.map((step,pos)=>{
+      let cls='ostep';
+      if(rev){ cls += (item.steps[pos]===step ? ' correct':' wrong'); }
+      return `<div class="${cls}">
+        <div class="onum">${pos+1}</div>
+        <div class="otext">${step}</div>
+        <div class="omove">
+          <button onclick="moveStep(${pos},-1)" ${pos===0?'disabled':''}>▲</button>
+          <button onclick="moveStep(${pos},1)" ${pos===seq.length-1?'disabled':''}>▼</button>
+        </div></div>`;
+    }).join('');
+    const oexpl = rev ? `<div class="expl"><div class="el">Explanation · correct order shown above</div><p>${item.e}</p></div>` : '';
+    bodyInner = `
+      <div class="qhead">
+        <span class="tag" style="color:${dom.color};border-color:${dom.color}66">${dom.name}</span>
+        <span class="qnum">Q${cur+1} · ${item.d} · ordering</span>
+      </div>
+      ${item.s?`<div class="scen">Scenario · ${SCEN[item.s]}</div>`:''}
+      <div class="qtext">${item.q}</div>
+      <div class="qhint">Use the ▲ ▼ buttons to arrange the steps into the correct order</div>
+      <div class="opts">${rows}</div>
+      ${oexpl}`;
+  } else {
+    let opts=item.opts.map((o,i)=>{
+      const sel = isMulti(cur) ? (Array.isArray(a)&&a.includes(i)) : (a===i);
+      let cls='opt'+(isMulti(cur)?' multi':'');
+      if(sel) cls+=' sel';
+      if(reveal){
+        cls+=' locked';
+        const correct = isMulti(cur)? item.a.includes(i) : item.a===i;
+        if(correct) cls+=' correct';
+        else if(sel) cls+=' wrong';
+      }
+      const mark = isMulti(cur) ? (sel?'✓':'') : letter(i);
+      return `<div class="${cls}" onclick="pick(${i})">
+        <div class="mark">${mark}</div><div class="otext">${o}</div></div>`;
+    }).join('');
+    let expl = reveal ? `<div class="expl"><div class="el">Explanation · correct: ${
+        (isMulti(cur)?item.a.map(letter).join(', '):letter(item.a))
+      }</div><p>${item.e}</p></div>` : '';
+    bodyInner = `
+      <div class="qhead">
+        <span class="tag" style="color:${dom.color};border-color:${dom.color}66">${dom.name}</span>
+        <span class="qnum">Q${cur+1} · ${item.d}</span>
+      </div>
+      ${item.s?`<div class="scen">Scenario · ${SCEN[item.s]}</div>`:''}
+      <div class="qtext">${item.q}</div>
+      ${isMulti(cur)?'<div class="qhint">Select all that apply (2)</div>':''}
+      <div class="opts">${opts}</div>
+      ${expl}`;
+  }
+  document.getElementById('qbody').innerHTML=bodyInner;
+
+  document.getElementById('progLab').textContent=`Question ${cur+1} of ${Q.length}`;
+  document.getElementById('answeredLab').textContent=`${answers.filter((_,i)=>isAnswered(i)).length} answered`;
+  document.getElementById('progFill').style.width=((cur+1)/Q.length*100)+'%';
+  document.getElementById('prevBtn').disabled=cur===0;
+  document.getElementById('nextBtn').disabled=cur===Q.length-1;
+  const fb=document.getElementById('flagBtn');
+  fb.classList.toggle('on',flags[cur]);
+  fb.textContent = flags[cur]?'⚑ Flagged':'⚑ Flag';
+  updateNavGrid();
+}
+
+function pick(i){
+  if(!timed && isAnswered(cur)) return; // locked after answer in study mode
+  if(isMulti(cur)){
+    let a=Array.isArray(answers[cur])?[...answers[cur]]:[];
+    if(a.includes(i)) a=a.filter(x=>x!==i); else a.push(i);
+    // cap at 2 for these items
+    if(a.length>2) a.shift();
+    answers[cur]=a;
+  } else {
+    answers[cur]=i;
+  }
+  render();
+}
+
+function moveStep(pos,dir){
+  const seq=arrange[cur]; if(!seq) return;
+  const t=pos+dir; if(t<0||t>=seq.length) return;
+  [seq[pos],seq[t]]=[seq[t],seq[pos]];
+  touched[cur]=true;
+  render();
+}
+function go(dir){ const n=cur+dir; if(n>=0&&n<Q.length){cur=n;render();window.scrollTo(0,0);} }
+function toggleFlag(){ flags[cur]=!flags[cur]; render(); }
+
+/* ---------- NAVIGATOR ---------- */
+function buildNavGrid(){
+  const g=document.getElementById('navgrid');
+  g.innerHTML=Q.map((_,i)=>`<button onclick="jump(${i})" id="nav${i}">${i+1}</button>`).join('');
+}
+function updateNavGrid(){
+  Q.forEach((_,i)=>{
+    const b=document.getElementById('nav'+i); if(!b)return;
+    b.className='';
+    if(isAnswered(i)) b.classList.add('done');
+    if(flags[i]) b.classList.add('flagged');
+    if(i===cur) b.classList.add('cur');
+  });
+}
+function jump(i){ cur=i; render(); window.scrollTo(0,0); }
+
+/* ---------- SCORING ---------- */
+function correctOn(i){
+  if(isOrder(i)){ return touched[i] && (arrange[i]||[]).join('||')===Q[i].steps.join('||'); }
+  const a=answers[i]; if(a===null)return false;
+  if(isMulti(i)){
+    if(!Array.isArray(a))return false;
+    const want=[...Q[i].a].sort().join(','); const got=[...a].sort().join(',');
+    return want===got;
+  }
+  return a===Q[i].a;
+}
+
+function submitExam(){
+  if(submitted) return;
+  const unanswered=answers.filter((_,i)=>!isAnswered(i)).length;
+  if(!submitted && unanswered>0 && remaining>0){
+    if(!confirm(`${unanswered} question(s) unanswered. Submit anyway?`)) return;
+  }
+  submitted=true;
+  if(timerId) clearInterval(timerId);
+  const correct=Q.reduce((n,_,i)=>n+(correctOn(i)?1:0),0);
+  const pct=correct/Q.length;
+  const scaled=Math.round(100+pct*900);
+  const pass=scaled>=720;
+
+  document.getElementById('exam').classList.add('hide');
+  document.getElementById('results').classList.remove('hide');
+
+  const sn=document.getElementById('scoreNum');
+  sn.textContent=scaled; sn.className='score-num mono '+(pass?'pass':'fail');
+  const v=document.getElementById('verdict'); v.textContent=pass?'PASS':'DID NOT PASS'; v.className='verdict '+(pass?'pass':'fail');
+  document.getElementById('scoreMeta').textContent=`${correct}/${Q.length} correct · ${Math.round(pct*100)}% · pass mark 720`;
+
+  // per-domain
+  const db=document.getElementById('dbreak');
+  db.innerHTML=DOMAINS.map(d=>{
+    const idx=Q.map((q,i)=>({q,i})).filter(x=>x.q.d===d.id).map(x=>x.i);
+    const c=idx.filter(i=>correctOn(i)).length;
+    const p=Math.round(c/idx.length*100);
+    return `<div class="drow">
+      <div class="top"><span>${d.name}</span><span class="dn">${c}/${idx.length} · ${p}%</span></div>
+      <div class="dbar"><i style="width:${p}%;background:${p>=70?d.color:'var(--fail)'}"></i></div>
+    </div>`;
+  }).join('');
+
+  // review
+  document.getElementById('reviewBody').innerHTML=Q.map((item,i)=>{
+    const dom=DOMAINS.find(d=>d.id===item.d);
+    const a=answers[i];
+    const ok=correctOn(i);
+    let optsHtml;
+    if(isOrder(i)){
+      const got=arrange[i]||[];
+      optsHtml=item.steps.map((step,pos)=>{
+        const placed = got[pos]===step;
+        const at = got.indexOf(step);
+        return `<div class="ostep ${placed?'correct':'wrong'}"><div class="onum">${pos+1}</div><div class="otext">${step}${(!placed&&touched[i])?` <span style="color:var(--dim)">(you placed this at ${at>=0?at+1:'—'})</span>`:''}</div></div>`;
+      }).join('');
+    } else {
+      optsHtml=item.opts.map((o,j)=>{
+        const sel=isMulti(i)?(Array.isArray(a)&&a.includes(j)):(a===j);
+        const isC=isMulti(i)?item.a.includes(j):item.a===j;
+        let cls='opt locked'+(isMulti(i)?' multi':'');
+        if(isC)cls+=' correct'; else if(sel)cls+=' wrong';
+        return `<div class="${cls}"><div class="mark">${isMulti(i)?(isC?'✓':(sel?'✗':'')):letter(j)}</div><div class="otext">${o}</div></div>`;
+      }).join('');
+    }
+    return `<div style="margin:26px 0;padding-bottom:8px;border-bottom:1px solid var(--line)">
+      <div class="qhead">
+        <span class="tag" style="color:${dom.color};border-color:${dom.color}66">${dom.name}</span>
+        <span class="qnum">Q${i+1} · ${ok?'<span style=\"color:var(--pass)\">correct</span>':'<span style=\"color:var(--fail)\">'+(isAnswered(i)?'incorrect':'skipped')+'</span>'}</span>
+      </div>
+      ${item.s?`<div class="scen">Scenario · ${SCEN[item.s]}</div>`:''}
+      <div class="qtext" style="font-size:17px">${item.q}</div>
+      <div class="opts">${optsHtml}</div>
+      <div class="expl"><div class="el">Explanation</div><p>${item.e}</p></div>
+    </div>`;
+  }).join('');
+  window.scrollTo(0,0);
+}
+(function initExam(){
+  try{
+    document.title = EXAM.code + ' Mock Exam';
+    const S=(id,txt)=>{const el=document.getElementById(id); if(el) el.textContent=txt;};
+    S('exCode',EXAM.code); S('exTitle',EXAM.title); S('exSub',EXAM.sub);
+    S('mQ',EXAM.items); S('mT',EXAM.minutes+' min');
+    S('exTimedP','All '+EXAM.items+' questions, '+EXAM.minutes+'-minute countdown, answers hidden until you submit — the real sitting.');
+    S('exFoot',EXAM.foot);
+    S('exEyebrow2','Score report · '+EXAM.code+' practice');
+    S('exRevHead','Review all '+EXAM.items+' questions');
+    const tm=document.getElementById('timer'); if(tm) tm.textContent=String(EXAM.minutes)+':00';
+  }catch(e){}
+})();
+</script>

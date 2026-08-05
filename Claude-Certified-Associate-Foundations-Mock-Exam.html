@@ -1,0 +1,493 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CCAO-F Mock Exam</title>
+<style>
+  :root{
+    --ink:#0E141C; --panel:#161F2B; --panel2:#1C2836; --line:#28374A;
+    --text:#DCE4EE; --muted:#8497AD; --dim:#5D6E82;
+    --accent:#59B9FF; --accent-dim:#2C6E9E;
+    --pass:#43D9A3; --fail:#F0736B; --flag:#F5B84C;
+    --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+    --sans:"Inter",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  }
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;450;500;600;700&display=swap');
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:var(--ink);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:860px;margin:0 auto;padding:32px 20px 96px}
+  .mono{font-family:var(--mono)}
+  h1,h2,h3{margin:0;font-weight:600;letter-spacing:-.01em}
+  a{color:var(--accent)}
+  button{font-family:inherit;cursor:pointer;border:none}
+  .btn{background:var(--accent);color:#04121D;font-weight:600;padding:12px 22px;border-radius:8px;font-size:15px;transition:.15s}
+  .btn:hover{filter:brightness(1.08)}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  .btn.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+  .btn.ghost:hover{border-color:var(--accent);color:var(--accent)}
+  .tag{font-family:var(--mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);border:1px solid var(--accent-dim);padding:3px 8px;border-radius:5px;display:inline-block}
+  .hide{display:none!important}
+
+  /* start */
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+  .hero-code{font-family:var(--mono);font-size:56px;font-weight:600;letter-spacing:-.02em;color:var(--text);margin:6px 0 2px}
+  .hero-sub{font-size:19px;color:var(--muted);max-width:640px;margin-top:10px}
+  .meta-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:28px 0}
+  .meta-grid div{background:var(--panel);padding:16px 14px}
+  .meta-grid .k{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim)}
+  .meta-grid .v{font-size:22px;font-weight:600;margin-top:4px}
+  .weights{margin:26px 0}
+  .wrow{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+  .wrow:last-child{border-bottom:none}
+  .wbar{height:7px;background:var(--panel2);border-radius:4px;overflow:hidden;margin-top:6px}
+  .wbar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent-dim),var(--accent))}
+  .wpct{font-family:var(--mono);color:var(--muted);font-size:13px}
+  .modes{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}
+  .mode{flex:1;min-width:220px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px}
+  .mode h3{font-size:16px;margin-bottom:6px}
+  .mode p{color:var(--muted);font-size:13.5px;margin:0 0 14px}
+
+  /* exam header */
+  .exam-bar{position:sticky;top:0;z-index:20;background:rgba(14,20,28,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);margin:-32px -20px 24px;padding:14px 20px;display:flex;align-items:center;gap:16px;justify-content:space-between}
+  .prog{flex:1}
+  .prog .lab{font-family:var(--mono);font-size:12px;color:var(--muted);display:flex;justify-content:space-between;margin-bottom:6px}
+  .track{height:5px;background:var(--panel2);border-radius:3px;overflow:hidden}
+  .track i{display:block;height:100%;background:var(--accent);transition:width .3s}
+  .timer{font-family:var(--mono);font-size:20px;font-weight:600;color:var(--text);min-width:96px;text-align:right}
+  .timer.warn{color:var(--flag)}
+  .timer.crit{color:var(--fail)}
+
+  /* question */
+  .qhead{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+  .qnum{font-family:var(--mono);font-size:13px;color:var(--dim)}
+  .scen{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold,#F5B84C);margin-bottom:8px;font-weight:600}
+  .ostep{display:flex;align-items:center;gap:12px;padding:11px 14px;border:1px solid var(--line);border-radius:9px;margin-bottom:8px;background:#121a24}
+  .ostep.correct{border-color:var(--pass)}
+  .onum{font-family:var(--mono);font-size:13px;color:var(--accent);min-width:20px;text-align:center}
+  .omove{margin-left:auto;display:flex;gap:6px}
+  .omove button{background:#1a2430;color:#e8eef5;border:1px solid var(--line);border-radius:6px;width:30px;height:30px;cursor:pointer;font-size:12px;line-height:1}
+  .omove button:disabled{opacity:.3;cursor:not-allowed}
+  .qtext{font-size:19px;line-height:1.5;font-weight:500;margin-bottom:6px}
+  .qhint{font-family:var(--mono);font-size:12px;color:var(--flag);margin-bottom:18px}
+  .opts{display:flex;flex-direction:column;gap:10px}
+  .opt{display:flex;gap:13px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:14px 16px;transition:.12s}
+  .opt:hover{border-color:var(--accent-dim)}
+  .opt.sel{border-color:var(--accent);background:var(--panel2)}
+  .opt .mark{flex:0 0 24px;height:24px;border:1.5px solid var(--dim);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:1px}
+  .opt.multi .mark{border-radius:6px}
+  .opt.sel .mark{border-color:var(--accent);background:var(--accent);color:#04121D;font-weight:600}
+  .opt .otext{flex:1}
+  /* review states */
+  .opt.correct{border-color:var(--pass);background:rgba(67,217,163,.08)}
+  .opt.correct .mark{border-color:var(--pass);background:var(--pass);color:#04121D}
+  .opt.wrong{border-color:var(--fail);background:rgba(240,115,107,.08)}
+  .opt.wrong .mark{border-color:var(--fail);background:var(--fail);color:#fff}
+  .opt.locked{pointer-events:none}
+  .expl{margin-top:16px;border-left:3px solid var(--accent-dim);background:var(--panel);padding:14px 16px;border-radius:0 8px 8px 0}
+  .expl .el{font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
+  .expl p{margin:0;color:var(--muted);font-size:14px}
+
+  .nav{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:28px}
+  .flagbtn{background:transparent;border:1px solid var(--line);color:var(--muted);padding:9px 14px;border-radius:8px;font-size:13px;font-family:var(--mono)}
+  .flagbtn.on{border-color:var(--flag);color:var(--flag)}
+
+  /* navigator grid */
+  .navgrid{display:grid;grid-template-columns:repeat(12,1fr);gap:7px;margin:22px 0}
+  .navgrid button{aspect-ratio:1;border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:6px;font-family:var(--mono);font-size:12px}
+  .navgrid button.done{border-color:var(--accent-dim);color:var(--text);background:var(--panel2)}
+  .navgrid button.flagged{border-color:var(--flag);color:var(--flag)}
+  .navgrid button.cur{outline:2px solid var(--accent);outline-offset:1px}
+
+  /* results */
+  .score-hero{text-align:center;padding:36px 0 8px}
+  .score-num{font-family:var(--mono);font-size:84px;font-weight:600;line-height:1}
+  .score-num.pass{color:var(--pass)} .score-num.fail{color:var(--fail)}
+  .score-den{font-family:var(--mono);font-size:22px;color:var(--dim)}
+  .verdict{font-size:22px;font-weight:600;margin-top:10px}
+  .verdict.pass{color:var(--pass)} .verdict.fail{color:var(--fail)}
+  .score-meta{color:var(--muted);margin-top:6px;font-family:var(--mono);font-size:13px}
+  .dbreak{margin:30px 0}
+  .drow{padding:12px 0;border-bottom:1px solid var(--line)}
+  .drow .top{display:flex;justify-content:space-between;font-size:14px;margin-bottom:7px}
+  .drow .dn{color:var(--muted);font-family:var(--mono);font-size:12px}
+  .dbar{height:8px;background:var(--panel2);border-radius:4px;overflow:hidden}
+  .dbar i{display:block;height:100%}
+  .rev-head{display:flex;justify-content:space-between;align-items:center;margin:34px 0 10px}
+  .footer{color:var(--dim);font-size:12px;line-height:1.7;margin-top:40px;border-top:1px solid var(--line);padding-top:18px}
+  @media(max-width:620px){
+    .meta-grid{grid-template-columns:repeat(2,1fr)}
+    .hero-code{font-size:42px}
+    .navgrid{grid-template-columns:repeat(8,1fr)}
+    .score-num{font-size:64px}
+  }
+</style>
+
+<div class="wrap">
+  <!-- ============ START ============ -->
+  <section id="start">
+    <div class="eyebrow">Anthropic · Claude Partner Network · Unofficial practice</div>
+    <div class="hero-code" id="exCode">CCAO-F</div>
+    <h1 style="font-size:24px;font-weight:600" id="exTitle">Claude Certified Associate — Foundations</h1>
+    <p class="hero-sub" id="exSub">Sixty questions across the seven domains of the official blueprint, in the exam's applied business-judgment style. Scaled scoring out of 1,000; 720 to pass.</p>
+
+    <div class="meta-grid">
+      <div><div class="k">Questions</div><div class="v" id="mQ">60</div></div>
+      <div><div class="k">Time limit</div><div class="v" id="mT">120 min</div></div>
+      <div><div class="k">Pass score</div><div class="v">720</div></div>
+      <div><div class="k">Scale</div><div class="v">100–1000</div></div>
+    </div>
+
+    <h3 style="font-size:15px;margin-bottom:4px">Domain weighting</h3>
+    <div class="weights" id="weights"></div>
+
+    <div class="modes">
+      <div class="mode">
+        <h3>Timed exam</h3>
+        <p id="exTimedP">All 60 questions, 120-minute countdown, answers hidden until you submit — the real sitting.</p>
+        <button class="btn" onclick="start(true)">Start timed exam</button>
+      </div>
+      <div class="mode">
+        <h3>Study mode</h3>
+        <p>No clock. Feedback and explanation reveal the moment you answer each question.</p>
+        <button class="btn ghost" onclick="start(false)">Start study mode</button>
+      </div>
+    </div>
+
+    <div class="footer" id="exFoot">
+      Independent study material, not affiliated with or endorsed by Anthropic. Questions are original and written against the published domain structure and the objective list on the official score report; they are not reproductions of live exam items. Real exam format per Exam Guide v1.0 (July 2026): 60 questions, 120 minutes, scaled 100–1000, 720 to pass, delivered via Pearson VUE.
+    </div>
+  </section>
+
+  <!-- ============ EXAM ============ -->
+  <section id="exam" class="hide">
+    <div class="exam-bar">
+      <div class="prog">
+        <div class="lab"><span id="progLab">Question 1 of 60</span><span id="answeredLab">0 answered</span></div>
+        <div class="track"><i id="progFill" style="width:0"></i></div>
+      </div>
+      <div class="timer" id="timer">120:00</div>
+    </div>
+
+    <div id="qbody"></div>
+
+    <div class="nav">
+      <button class="btn ghost" id="prevBtn" onclick="go(-1)">← Previous</button>
+      <button class="flagbtn" id="flagBtn" onclick="toggleFlag()">⚑ Flag</button>
+      <button class="btn" id="nextBtn" onclick="go(1)">Next →</button>
+    </div>
+
+    <div class="navgrid" id="navgrid"></div>
+    <div style="text-align:center">
+      <button class="btn" id="submitBtn" onclick="submitExam()">Submit exam</button>
+    </div>
+  </section>
+
+  <!-- ============ RESULTS ============ -->
+  <section id="results" class="hide">
+    <div class="score-hero">
+      <div class="eyebrow" id="exEyebrow2">Score report · CCAR-F practice</div>
+      <div class="score-num mono" id="scoreNum">—</div>
+      <div class="score-den">/ 1000 &nbsp;·&nbsp; pass 720</div>
+      <div class="verdict" id="verdict"></div>
+      <div class="score-meta" id="scoreMeta"></div>
+    </div>
+    <h3 style="font-size:15px">Test objectives — percent correct by domain</h3>
+    <div class="dbreak" id="dbreak"></div>
+    <div class="rev-head">
+      <h3 style="font-size:17px" id="exRevHead">Review all 60 questions</h3>
+      <button class="btn ghost" onclick="location.reload()">Retake</button>
+    </div>
+    <div id="reviewBody"></div>
+  </section>
+</div>
+
+<script>
+const EXAM = {"code":"CCAO-F","title":"Claude Certified Associate — Foundations","items":60,"minutes":120,"sub":"Sixty questions across the seven domains of the official blueprint, in the exam's applied business-judgment style. Scaled scoring out of 1,000; 720 to pass.","foot":"Independent study material, not affiliated with or endorsed by Anthropic. Questions are original and written against the published domain blueprint and objectives; they are not reproductions of live exam items. Real exam format per Exam Guide v1.0 (July 2026): 60 questions, 120 minutes, scaled 100–1000, 720 to pass, exam fee $99 USD, delivered via Pearson VUE."};
+/* ---------- DOMAINS ---------- */
+const DOMAINS = [{"id":"D1","name":"Prompting & Task Execution","weight":14,"color":"#59B9FF"},{"id":"D2","name":"Output Evaluation & Validation","weight":21,"color":"#43D9A3"},{"id":"D3","name":"Product & Model Selection","weight":12,"color":"#C08CFF"},{"id":"D4","name":"Workflow Integration & Solution Design","weight":16,"color":"#F5B84C"},{"id":"D5","name":"Configuration & Knowledge Management","weight":12,"color":"#F0736B"},{"id":"D6","name":"Governance, Risk & Responsible Use","weight":15,"color":"#7FD1FF"},{"id":"D7","name":"Troubleshooting & Optimization","weight":10,"color":"#E8B4FF"}];
+const SCEN = {};
+
+/* ---------- QUESTIONS ----------
+   opts: array of strings. answer: index (single) or array of indices (multi).
+   multi:true renders checkboxes and requires the exact set.
+*/
+const Q = [{"d": "D1", "q": "Which prompt is most likely to produce a usable first draft of a customer email?", "opts": ["One that states the goal, the audience, key points to cover, and the desired tone and length", "One that simply says 'write a good customer email about the refund'", "One that lists ten unrelated facts and asks Claude to figure out what matters", "One that asks Claude to be creative and surprise you with the result"], "a": 0, "e": "Clear prompts specify goal, audience, content, and format constraints. Vague or unfocused prompts leave too much to guesswork and produce inconsistent output."}, {"d": "D1", "q": "You need a full go-to-market plan covering pricing, channels, and messaging. What is the most effective way to prompt for it?", "opts": ["Break the request into parts and work through pricing, then channels, then messaging", "Ask for the entire plan in one sentence and accept whatever comes back", "Ask three unrelated questions at once and merge the answers yourself", "Request only the section you find easiest and skip the rest"], "a": 0, "e": "Task decomposition — structuring a complex request into ordered sub-tasks — yields more complete, coherent results than a single sweeping ask."}, {"d": "D1", "q": "A first draft is close but too formal for your audience. What is the best next step?", "opts": ["Tell Claude what to change (make it warmer, shorter) and iterate on the draft", "Start over from a blank prompt and hope for a better tone", "Accept the formal version because rewriting is not worth the effort", "Ask a colleague to rewrite it rather than iterating with Claude"], "a": 0, "e": "Iterating with specific, targeted feedback refines output efficiently. Regenerating from scratch discards useful progress."}, {"d": "D1", "q": "You are brainstorming campaign ideas rather than finalizing copy. How should the prompt differ from a drafting prompt?", "opts": ["Invite many varied options and divergent thinking rather than one polished answer", "Demand a single final answer with strict formatting and no alternatives", "Provide a rigid template that each idea must fill in exactly", "Ask only for ideas you have already thought of yourself"], "a": 0, "e": "Prompting strategy should match task type: brainstorming benefits from breadth and divergence, whereas drafting benefits from constraints and a single refined output."}, {"d": "D1", "q": "Claude keeps formatting a summary differently each time. What most reliably fixes the inconsistency?", "opts": ["Include one or two examples of the exact format you want", "Ask Claude to 'be consistent' without showing what consistent means", "Lower your expectations and reformat the output by hand each time", "Send the request more times until one comes back formatted well"], "a": 0, "e": "Showing concrete examples of the desired output format steers structure far more reliably than an abstract instruction to be consistent."}, {"d": "D1", "q": "You are using Claude to produce a polished draft of a complex business document. The steps below are listed out of order:<ol style=\"margin:10px 0 6px 22px;padding:0\"><li>Generate the draft</li><li>Define the goal and the audience</li><li>Provide the relevant context and source material</li><li>Review the output and iterate</li><li>Specify the format, tone, and length constraints</li></ol>In which order should they be carried out?", "opts": ["2 → 3 → 5 → 1 → 4", "1 → 2 → 3 → 5 → 4", "2 → 3 → 5 → 4 → 1", "2 → 5 → 3 → 1 → 4"], "a": 0, "e": "Effective drafting front-loads goal and audience, then context and source material, then format/tone/length constraints, before generating the draft and reviewing/iterating. Drafting or reviewing before the prep steps are done produces weaker, less targeted output."}, {"d": "D1", "q": "For a straightforward classification task where you can show a few labeled examples, which approach usually improves accuracy most?", "opts": ["Provide a few labeled examples in the prompt (few-shot)", "Give no examples and rely on a longer abstract description", "Ask Claude to invent its own labels as it goes", "Split the task across several chats with no shared context"], "a": 0, "e": "Few-shot examples demonstrate the pattern and typically outperform description alone for consistent, well-defined tasks."}, {"d": "D1", "multi": true, "q": "Which two practices make a business prompt more likely to produce usable output? (Select two.)", "opts": ["State the intended audience and purpose of the output", "Specify the format and any length or tone constraints", "Leave the request open-ended so Claude has full freedom", "Use as much jargon as possible to sound authoritative"], "a": [0, 1], "e": "Naming the audience/purpose and specifying format constraints both reduce ambiguity. Open-endedness and jargon do not improve reliability."}, {"d": "D2", "q": "Claude summarizes a new regulation and cites a specific subsection number. Before sending it to the compliance team, what should you do?", "opts": ["Verify the cited subsection against the official regulation text", "Send it as-is because Claude sounded confident", "Ask Claude to rate its own confidence and send if high", "Cross-check it against a secondary news summary of the regulation and send if the two broadly agree"], "a": 0, "e": "Models can fabricate specific-looking details like citation numbers. Validating factual claims against an authoritative source is the required diligence; self-reported confidence is not a reliability signal."}, {"d": "D2", "q": "A drafted market overview names a study and a precise statistic you cannot find anywhere. What is the most likely explanation?", "opts": ["Claude may have hallucinated the study and figure, so both need verification", "The study is certainly real because the wording is specific", "The statistic is trustworthy because it has a decimal point", "Claude never invents sources, so no check is needed"], "a": 0, "e": "Confident, specific-sounding but unverifiable references are a classic hallucination pattern and must be checked before use."}, {"d": "D2", "q": "Which situation most clearly requires human review before acting on Claude's output?", "opts": ["A legal or financial decision with significant consequences", "Rewording an internal note for tone", "Brainstorming a list of blog title ideas", "Summarizing your own meeting notes for yourself"], "a": 0, "e": "High-stakes, consequential outputs warrant human validation; low-stakes internal drafts generally do not."}, {"d": "D2", "q": "What is a sound way to fact-check a claim Claude makes about current events?", "opts": ["Check it against a reliable primary or authoritative source", "Ask Claude the same question again and trust the repeat", "Assume it is correct if it is written fluently", "Search only for sources that already agree with it"], "a": 0, "e": "Verification means consulting authoritative sources, not re-asking the model or confirmation-seeking."}, {"d": "D2", "q": "A summary presents a strongly one-sided view of a contested topic. What is the best response?", "opts": ["Ask for the opposing perspectives and check the framing for bias", "Publish it because it reads persuasively", "Add more of the same viewpoint to strengthen it", "Assume balance is not needed for internal use"], "a": 0, "e": "Evaluating for bias means checking whether the output fairly represents multiple perspectives and correcting one-sidedness."}, {"d": "D2", "q": "You need to compare five vendors across the same criteria for a decision meeting. Which output format serves the audience best?", "opts": ["A structured comparison table", "A long unbroken paragraph", "A single sentence verdict with no detail", "A bulleted list with different criteria per vendor"], "a": 0, "e": "Choosing the right format matters: tabular data enables direct comparison, which prose or inconsistent lists do not."}, {"d": "D2", "q": "You have two drafts of an announcement — one for engineers, one for executives. How should you evaluate them?", "opts": ["Judge each against the needs and knowledge of its intended audience", "Pick whichever is longer", "Pick whichever uses more technical terms", "Merge them into one version for everyone"], "a": 0, "e": "Outputs should be adapted and compared against the intended audience; the right choice depends on fit, not length or vocabulary."}, {"d": "D2", "q": "Why is Claude's self-reported confidence a poor basis for deciding whether to trust an answer?", "opts": ["A model can state high confidence even when the content is wrong", "Confidence scores are always exactly calibrated", "High confidence guarantees the sources are real", "Low confidence always means the answer is wrong"], "a": 0, "e": "Self-reported confidence does not reliably track correctness, so it should not replace independent verification."}, {"d": "D2", "q": "An executive summary is technically accurate but full of engineering jargon the board won't follow. What should you do?", "opts": ["Adapt it into plain language suited to the board's level", "Send it unchanged since the facts are correct", "Make it more technical to signal rigor", "Shorten it to one line to avoid the jargon problem"], "a": 0, "e": "Refining and adapting output for the intended audience is part of validation; accuracy alone is not sufficient if the audience cannot use it."}, {"d": "D2", "multi": true, "q": "Which two signals suggest an output needs verification before you rely on it? (Select two.)", "opts": ["It cites a specific source or statistic you cannot confirm", "It makes a confident claim about a fast-changing fact", "It is written in clear, fluent prose", "It uses a professional and formal tone"], "a": [0, 1], "e": "Unverifiable specifics and confident claims about volatile facts are warning signs. Fluency and tone say nothing about accuracy."}, {"d": "D2", "q": "You have a pile of unstructured research notes to hand to a teammate. What is the most useful way to organize them?", "opts": ["Curate and group them by theme with clear headings", "Leave them in the raw order they were captured", "Delete anything you did not write yourself", "Convert every note into a single long paragraph"], "a": 0, "e": "Organizing and curating information into a clear structure makes it usable; raw dumps and lossy reformatting do not."}, {"d": "D2", "q": "Before sending a Claude-generated report to a stakeholder, you run a validation pass. The steps below are listed out of order:<ol style=\"margin:10px 0 6px 22px;padding:0\"><li>Check the factual claims and figures against the source material</li><li>Adapt the tone and format for the audience</li><li>Read the output critically for obvious errors or gaps</li><li>Obtain human sign-off if the content is high-stakes</li><li>Resolve any inconsistencies you found</li></ol>In which order should they be carried out?", "opts": ["3 → 1 → 5 → 2 → 4", "2 → 3 → 1 → 5 → 4", "3 → 1 → 2 → 5 → 4", "1 → 3 → 5 → 2 → 4"], "a": 0, "e": "Validation moves from a critical read, to checking claims and figures against the source, to resolving inconsistencies, to adapting tone and format, and finally human sign-off for high-stakes content. Adapting tone before verifying facts risks polishing wrong information."}, {"d": "D2", "q": "Two paragraphs of the same output state different figures for the same metric. What should you do?", "opts": ["Flag the inconsistency and resolve it against the source before using it", "Use whichever figure appears first", "Average the two figures and move on", "Ignore it since minor differences are expected"], "a": 0, "e": "Internal inconsistencies signal an error; they should be reconciled against the source, not papered over."}, {"d": "D3", "q": "You must generate a high volume of short reply drafts where speed and cost matter more than deep reasoning. Which choice fits best?", "opts": ["A faster, lower-cost model suited to straightforward high-volume tasks", "The most capable, highest-cost model for every reply", "Use the most capable model but cap response length to cut cost", "Switching to a different AI platform entirely"], "a": 0, "e": "Match the model to the task: a faster, cheaper model fits simple high-volume work, reserving the top model for complex reasoning."}, {"d": "D3", "q": "Which task most justifies using the most capable (highest-quality) model rather than a fast, cheap one?", "opts": ["Complex multi-step analysis where reasoning quality is critical", "Bulk generation of short, formulaic confirmations", "Simple keyword tagging of thousands of items", "Reformatting text into a fixed template"], "a": 0, "e": "Reserve the most capable model for complex reasoning; routine high-volume tasks are better served by faster, cheaper options."}, {"d": "D3", "q": "You need Claude to gather and synthesize information from many sources into a cited overview. Which capability fits best?", "opts": ["A research-oriented mode designed for multi-source gathering and synthesis", "A quick one-line chat reply", "A single long chat where you paste each source in by hand", "A model chosen solely for lowest cost"], "a": 0, "e": "Aligning the product feature to the task — research/synthesis work benefits from a research mode rather than a plain quick reply."}, {"d": "D3", "q": "You want a self-contained deliverable (a document or small app) you can view and iterate on. Which feature is designed for that?", "opts": ["Artifacts", "A one-off inline chat message", "Disabling memory", "Lowering the temperature"], "a": 0, "e": "Artifacts are built for standalone, iterable deliverables you can view and refine, unlike a transient inline reply."}, {"d": "D3", "q": "A long chat has drifted and Claude is losing track of earlier details. What is a sound way to manage the context limitation?", "opts": ["Summarize the key points and start a focused new session with that summary", "Keep adding messages indefinitely and hope it recovers", "Paste the entire history again every single turn", "Switch platforms to avoid context limits"], "a": 0, "e": "When context degrades, restarting with a concise summary of the essential facts restores focus; endless accumulation makes it worse."}, {"d": "D3", "q": "Your team repeatedly asks Claude about the same set of internal documents and standards. Which approach is most efficient?", "opts": ["Set up a Project with those documents and instructions so context persists", "Re-upload the documents in every new chat", "Memorize the answers and stop using Claude", "Ask each question in a separate throwaway chat"], "a": 0, "e": "Projects persist instructions and knowledge across chats, avoiding repetitive re-uploading for recurring work."}, {"d": "D3", "multi": true, "q": "Which two factors should drive Claude model selection for a task? (Select two.)", "opts": ["The reasoning complexity and quality the task requires", "The cost and latency budget for the workload", "The color scheme of the interface", "How many people have heard of the model"], "a": [0, 1], "e": "Model selection balances required quality/complexity against cost and speed; cosmetic or popularity factors are irrelevant."}, {"d": "D4", "q": "Before automating a manual reporting process with Claude, what should you do first?", "opts": ["Analyze the current process and requirements to see where Claude adds value", "Automate every step immediately and fix problems later", "Replace the whole team before testing anything", "Assume Claude can do it all with no analysis"], "a": 0, "e": "Applying Claude well starts with analyzing requirements and the existing process to target where it genuinely helps."}, {"d": "D4", "q": "You are scoping a new initiative and need background, options, and a rough plan. How can Claude help most appropriately?", "opts": ["Use it for research, option generation, and drafting a plan you then validate", "Have it make the final go/no-go decision for you", "Skip planning and start building immediately", "Use it only after the project is already finished"], "a": 0, "e": "Claude supports research, planning, and process optimization; final decisions and validation remain with the human."}, {"d": "D4", "q": "A repetitive weekly workflow has several manual copy-paste steps. What is a reasonable redesign goal?", "opts": ["Use Claude to automate the low-value repetitive steps while keeping human checkpoints", "Automate nothing because change is risky", "Automate every step and remove all human review", "Add more manual steps to be safe"], "a": 0, "e": "Process optimization augments or redesigns workflows — automating low-value steps while retaining human oversight where it matters."}, {"d": "D4", "q": "How should Claude typically be introduced into an existing team workflow?", "opts": ["As an augmentation that fits current steps, then expanded as it proves value", "As a full replacement for the whole workflow on day one", "Only in a disconnected sandbox never used for real work", "By forcing everyone to change tools overnight without a pilot"], "a": 0, "e": "Integration usually starts by augmenting existing workflows and expanding once value and trust are established."}, {"d": "D4", "q": "When presenting a Claude-based solution to stakeholders, what should you communicate alongside its benefits?", "opts": ["Its limitations and where human review is still required", "Only the upside, to build enthusiasm", "That it never makes mistakes", "That it removes the need for any governance"], "a": 0, "e": "Responsible stakeholder communication conveys both value and limitations, including where human oversight remains necessary."}, {"d": "D4", "q": "Which is the strongest candidate for a first Claude use case in a business team?", "opts": ["A high-volume, low-risk task with clear success criteria", "A safety-critical decision with legal exposure", "A one-off task no one will ever repeat", "A task where errors are catastrophic and hard to detect"], "a": 0, "e": "Good first use cases are high-volume and low-risk with measurable success, not high-stakes or unrepeatable work."}, {"d": "D4", "q": "You are piloting Claude in a business workflow. The steps below are listed out of order:<ol style=\"margin:10px 0 6px 22px;padding:0\"><li>Build and test with representative sample data</li><li>Identify a suitable use case</li><li>Evaluate the outputs against the criteria</li><li>Define success criteria</li><li>Roll out and monitor</li></ol>In which order should they be carried out?", "opts": ["2 → 4 → 1 → 3 → 5", "2 → 1 → 4 → 3 → 5", "1 → 2 → 4 → 3 → 5", "2 → 4 → 1 → 5 → 3"], "a": 0, "e": "A sound pilot identifies the use case, defines success criteria, builds and tests on representative data, evaluates against the criteria, then rolls out with monitoring. Building before success is defined, or rolling out before evaluating, undermines the pilot."}, {"d": "D4", "q": "An early solution works but the outputs are inconsistent. What is the appropriate way to improve it?", "opts": ["Iterate on instructions and examples, testing against your success criteria", "Abandon the effort after the first imperfect result", "Ship it unchanged and stop measuring quality", "Add unrelated features to distract from the issue"], "a": 0, "e": "Solutions improve through iteration against defined success criteria, refining prompts, instructions, and examples."}, {"d": "D4", "q": "A stakeholder asks for a custom API integration and an autonomous multi-agent system. As an Associate, what is the right move?", "opts": ["Recognize this exceeds the Associate scope and escalate to an Architect or Developer", "Attempt to build the agentic system yourself without the needed skills", "Tell them it is impossible with Claude", "Ignore the technical parts and deliver only slides"], "a": 0, "e": "Associates recognize their limits and escalate complex or technical implementation (APIs, agentic systems) to Architects and Developers."}, {"d": "D4", "q": "You are redesigning a workflow that includes a sensitive approval decision. How should automation be balanced?", "opts": ["Automate preparation and drafting, but keep the decision with a human", "Automate the approval decision entirely to save time", "Remove the approval step altogether", "Automate everything and audit once a year"], "a": 0, "e": "Solution design keeps consequential decisions under human control while automating supporting steps."}, {"d": "D5", "q": "You are setting up a Project so Claude answers consistently about your product. What belongs in the Project?", "opts": ["Clear instructions plus the relevant product documents as knowledge sources", "Only a one-line title and nothing else", "A random assortment of unrelated files", "Every document the team has ever produced, so nothing is left out"], "a": 0, "e": "A well-configured Project combines system-level instructions with curated knowledge sources relevant to the task."}, {"d": "D5", "q": "Your team's answers should reflect the latest policy, which lives in a shared Google Drive folder. What is a good approach?", "opts": ["Connect the Drive source so Claude can draw on the current documents", "Paste last quarter's policy once and never update it", "Rely on memory of the policy from months ago", "Download the policy once now and paste it into each new chat"], "a": 0, "e": "Managing connectors (e.g., Google Drive) keeps Claude working from current knowledge sources rather than stale copies."}, {"d": "D5", "q": "Which is an example of an effective system-level instruction for a support Project?", "opts": ["State the tone, the scope of topics, and when to escalate to a human", "Say only 'be helpful' with no further guidance", "List every possible question and answer verbatim", "Leave instructions blank and hope for the best"], "a": 0, "e": "Good system instructions define tone, scope, and escalation behavior, giving consistent guidance without enumerating every case."}, {"d": "D5", "q": "A knowledge source in your Project is now outdated. What should you do?", "opts": ["Update or replace the source and revise instructions as needed", "Leave it and let Claude reconcile old and new itself", "Add the new version without removing the old, and ignore conflicts", "Delete the whole Project and start over from memory"], "a": 0, "e": "Maintaining configurations means updating knowledge sources and instructions as the underlying information changes."}, {"d": "D5", "q": "You are setting up a Claude Project so answers stay consistent. The steps below are listed out of order:<ol style=\"margin:10px 0 6px 22px;padding:0\"><li>Write system-level instructions that reference those sources</li><li>Add the knowledge sources the Project will draw on</li><li>Create the Project</li><li>Refine the instructions based on results</li><li>Test with representative prompts</li></ol>In which order should they be carried out?", "opts": ["3 → 2 → 1 → 5 → 4", "3 → 1 → 2 → 5 → 4", "3 → 2 → 1 → 4 → 5", "2 → 3 → 1 → 5 → 4"], "a": 0, "e": "Project setup creates the Project, adds the knowledge sources, writes instructions that reference them, tests with representative prompts, then refines based on results. Writing instructions before the sources exist, or refining before testing, is out of sequence."}, {"d": "D5", "q": "When is connecting a live data source preferable to uploading a static file?", "opts": ["When the underlying information changes and should stay current", "When the document will never change again", "When you want a frozen snapshot for the record", "When you want to avoid Claude seeing the latest version"], "a": 0, "e": "Connectors suit information that changes over time; static uploads suit fixed, snapshot content."}, {"d": "D5", "q": "Your Project's knowledge base has grown noisy with duplicate and stale documents. What improves answer quality most?", "opts": ["Curate the knowledge: remove stale duplicates and keep authoritative sources", "Add even more documents so nothing is missed", "Never touch it once it is set up", "Split every document into many tiny fragments so retrieval has more to match"], "a": 0, "e": "Curating knowledge — pruning stale duplicates and keeping authoritative sources — improves reliability more than piling on volume."}, {"d": "D6", "q": "You want to upload a spreadsheet with customer names and account numbers, but policy restricts sharing regulated personal data. What is the most appropriate action?", "opts": ["Remove or anonymize the personal identifiers before uploading, per policy", "Upload it as-is since the analysis is internal", "Upload it but tell Claude not to retain the data", "Skip the analysis entirely to be safe"], "a": 0, "e": "Applying data-sensitivity safeguards means anonymizing regulated identifiers so the analysis can proceed within policy; a 'do not retain' instruction is not a policy control, and abandoning the task is unnecessary."}, {"d": "D6", "q": "Which is an inappropriate use of Claude in a business setting?", "opts": ["Presenting its output as a definitive medical or legal determination without expert review", "Drafting a first version of an internal FAQ", "Brainstorming names for a product", "Summarizing a public article"], "a": 0, "e": "Using AI output as an authoritative professional determination without expert validation is an inappropriate, high-risk use."}, {"d": "D6", "q": "A colleague wants to paste confidential client data into a general chat that is out of policy scope. What should you advise?", "opts": ["Follow the data-sensitivity policy and avoid sharing regulated data out of scope", "Paste it anyway because it is faster", "Paste a slightly edited version and hope it is fine", "Share it only if the deadline is tight"], "a": 0, "e": "Responsible use requires following data-sensitivity and privacy policies regardless of convenience or deadlines."}, {"d": "D6", "q": "Your organization has an AI usage policy. How should it factor into daily Claude use?", "opts": ["Align your usage with the policy and governance standards consistently", "Treat the policy as optional guidance", "Follow it only when someone is watching", "Assume it does not apply to your team"], "a": 0, "e": "Following organizational AI policy and governance standards is a core responsible-use expectation, not optional."}, {"d": "D6", "q": "Why does it matter to consider bias and transparency when using AI-generated content?", "opts": ["Outputs can reflect bias, so review and appropriate disclosure protect fairness and trust", "Ethical concerns never apply to business content", "Transparency slows things down and should be skipped", "Bias only matters for public-facing content"], "a": 0, "e": "Understanding ethical implications — bias, fairness, transparency — is part of responsible use across contexts."}, {"d": "D6", "multi": true, "q": "Before using Claude on a dataset that may contain personal data, which two actions are appropriate? (Select two.)", "opts": ["Check the organization's data-sensitivity and privacy policy", "Remove or anonymize regulated identifiers not needed for the task", "Upload everything first and review later", "Assume anonymization is unnecessary for internal work"], "a": [0, 1], "e": "Responsible handling means checking policy and minimizing/anonymizing sensitive data before use, not uploading first and asking later."}, {"d": "D6", "q": "A request would have Claude give individualized legal advice to customers. What is the responsible response?", "opts": ["Decline or escalate; individualized legal advice needs a qualified professional", "Provide it confidently to be helpful", "Provide it but add a tiny disclaimer", "Provide it only for simple-sounding questions"], "a": 0, "e": "Recognizing inappropriate use cases and escalating to qualified experts is part of responsible-use judgment."}, {"d": "D6", "q": "Which is a basic privacy safeguard when working with Claude?", "opts": ["Never paste secrets such as passwords or API keys into prompts", "Paste credentials in a separate message so they are easy to delete afterward", "Share full customer records for richer context", "Disable all policies to move faster"], "a": 0, "e": "Protecting privacy and integrity means keeping secrets and unnecessary sensitive data out of prompts."}, {"d": "D6", "q": "Your team publishes AI-assisted content where disclosure is expected. What should you do?", "opts": ["Disclose the AI assistance as required by policy or context", "Hide the use of AI in all cases", "Disclose only if a reader complains", "Claim the content was fully human-written"], "a": 0, "e": "Transparency about AI assistance, where expected, supports trust and complies with responsible-use norms."}, {"d": "D7", "q": "A prompt returns vague, generic answers. What is the most effective first fix?", "opts": ["Add specifics: context, constraints, and an example of a good answer", "Send the same prompt several more times", "Blame the model and switch platforms", "Accept the generic answer and edit heavily by hand"], "a": 0, "e": "Underperforming prompts usually improve by adding specific context, constraints, and examples that pin down expectations."}, {"d": "D7", "q": "Early outputs miss a requirement your reviewers keep flagging. What should you do?", "opts": ["Adjust the prompt or instructions to address the feedback and re-test", "Ignore the feedback since the output looks fine to you", "Ship it and let reviewers keep fixing it", "Remove the reviewers from the process"], "a": 0, "e": "Optimization means adjusting the approach based on feedback and results, then confirming the change worked."}, {"d": "D7", "q": "A repetitive task takes many manual back-and-forth turns each time. How can you optimize it?", "opts": ["Turn the working prompt into a reusable Project or template", "Redo it manually from scratch every time", "Add extra unrelated steps for thoroughness", "Stop measuring how long it takes"], "a": 0, "e": "Workflows are optimized for efficiency by capturing effective prompts as reusable templates or Projects."}, {"d": "D7", "q": "Output quality is inconsistent across similar inputs. Which change most likely helps?", "opts": ["Provide clearer criteria and a few consistent examples", "Make the prompt vaguer to allow flexibility", "Change a different setting unrelated to the prompt", "Assume inconsistency cannot be reduced"], "a": 0, "e": "Clear criteria and consistent examples reduce variance across similar inputs."}, {"d": "D7", "q": "A prompt is producing a poor output and you need to troubleshoot it. The steps below are listed out of order:<ol style=\"margin:10px 0 6px 22px;padding:0\"><li>Isolate the likely cause (prompt, input, or task fit)</li><li>Identify exactly what is wrong with the output</li><li>Re-test with the same input</li><li>Adjust the prompt or approach accordingly</li><li>Confirm the output improved</li></ol>In which order should they be carried out?", "opts": ["2 → 1 → 4 → 3 → 5", "1 → 2 → 4 → 3 → 5", "2 → 1 → 3 → 4 → 5", "2 → 1 → 4 → 5 → 3"], "a": 0, "e": "Troubleshooting identifies the symptom, isolates the likely cause, adjusts the prompt or approach, re-tests on the same input, then confirms improvement. Adjusting before isolating the cause, or re-testing before adjusting, wastes cycles."}, {"d": "D7", "q": "You want to cut cost and time on a large batch of simple drafts without hurting quality much. What is a sensible optimization?", "opts": ["Use a faster, lower-cost model and a tight reusable prompt for the simple work", "Use the most expensive model for every item regardless of need", "Add more manual review to every single item", "Run each item several times and pick one at random"], "a": 0, "e": "Matching a cheaper, faster model to simple high-volume work and reusing a tight prompt optimizes cost and time without sacrificing needed quality."}];
+
+/* ---------- STATE ---------- */
+let cur=0, timed=true, remaining=EXAM.minutes*60, timerId=null, submitted=false;
+const answers = Q.map(()=>null);   // number | number[] | null
+const flags = Q.map(()=>false);
+const arrange = Q.map(()=>null);
+const touched = Q.map(()=>false);
+
+/* ---------- START SCREEN ---------- */
+const MAXW=Math.max(...DOMAINS.map(d=>d.weight));
+(function renderWeights(){
+  const el=document.getElementById('weights');
+  el.innerHTML = DOMAINS.map(d=>`
+    <div class="wrow">
+      <div>
+        <div style="font-size:14px">${d.name}</div>
+        <div class="wbar"><i style="width:${d.weight/MAXW*100}%;background:linear-gradient(90deg,${d.color}55,${d.color})"></i></div>
+      </div>
+      <div class="wpct">${d.weight}%</div>
+    </div>`).join('');
+})();
+
+/* Shuffle option order per session so there is no fixed position tell.
+   Remaps the correct-answer index/indices to the new order. */
+function shuffleOptions(){
+  Q.forEach(item=>{
+    if(item.type==='order') return;
+    const n=item.opts.length;
+    const order=[...Array(n).keys()];
+    for(let i=n-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]];}
+    item.opts=order.map(i=>item.opts[i]);
+    const back={}; order.forEach((old,neu)=>back[old]=neu);
+    item.a = Array.isArray(item.a) ? item.a.map(x=>back[x]).sort((a,b)=>a-b) : back[item.a];
+  });
+}
+
+function start(isTimed){
+  shuffleOptions();
+  Q.forEach((item,i)=>{ if(item.type==='order'){ const s=[...item.steps]; for(let k=s.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[s[k],s[j]]=[s[j],s[k]];} arrange[i]=s; } });
+  timed=isTimed;
+  document.getElementById('start').classList.add('hide');
+  document.getElementById('exam').classList.remove('hide');
+  buildNavGrid();
+  if(timed){ startTimer(); } else { document.getElementById('timer').textContent='study'; document.getElementById('timer').style.fontSize='15px'; }
+  render();
+  window.scrollTo(0,0);
+}
+
+function startTimer(){
+  const t=document.getElementById('timer');
+  timerId=setInterval(()=>{
+    remaining--;
+    const m=String(Math.floor(remaining/60)).padStart(2,'0');
+    const s=String(remaining%60).padStart(2,'0');
+    t.textContent=`${m}:${s}`;
+    t.classList.toggle('warn',remaining<=600&&remaining>120);
+    t.classList.toggle('crit',remaining<=120);
+    if(remaining<=0){ clearInterval(timerId); submitExam(); }
+  },1000);
+}
+
+/* ---------- QUESTION RENDER ---------- */
+function isMulti(i){ return !!Q[i].multi; }
+function isOrder(i){ return Q[i].type==='order'; }
+function isAnswered(i){
+  if(isOrder(i)) return touched[i];
+  const a=answers[i];
+  if(a===null) return false;
+  return isMulti(i) ? a.length>0 : true;
+}
+function letter(n){ return String.fromCharCode(65+n); }
+
+function render(){
+  const item=Q[cur];
+  const dom=DOMAINS.find(d=>d.id===item.d);
+  const a=answers[cur];
+  const reveal = !timed && isAnswered(cur); // study mode reveals after answering
+
+  let bodyInner;
+  if(isOrder(cur)){
+    const seq = arrange[cur] || item.steps;
+    const rev = !timed && touched[cur];
+    const rows = seq.map((step,pos)=>{
+      let cls='ostep';
+      if(rev){ cls += (item.steps[pos]===step ? ' correct':' wrong'); }
+      return `<div class="${cls}">
+        <div class="onum">${pos+1}</div>
+        <div class="otext">${step}</div>
+        <div class="omove">
+          <button onclick="moveStep(${pos},-1)" ${pos===0?'disabled':''}>▲</button>
+          <button onclick="moveStep(${pos},1)" ${pos===seq.length-1?'disabled':''}>▼</button>
+        </div></div>`;
+    }).join('');
+    const oexpl = rev ? `<div class="expl"><div class="el">Explanation · correct order shown above</div><p>${item.e}</p></div>` : '';
+    bodyInner = `
+      <div class="qhead">
+        <span class="tag" style="color:${dom.color};border-color:${dom.color}66">${dom.name}</span>
+        <span class="qnum">Q${cur+1} · ${item.d} · ordering</span>
+      </div>
+      ${item.s?`<div class="scen">Scenario · ${SCEN[item.s]}</div>`:''}
+      <div class="qtext">${item.q}</div>
+      <div class="qhint">Use the ▲ ▼ buttons to arrange the steps into the correct order</div>
+      <div class="opts">${rows}</div>
+      ${oexpl}`;
+  } else {
+    let opts=item.opts.map((o,i)=>{
+      const sel = isMulti(cur) ? (Array.isArray(a)&&a.includes(i)) : (a===i);
+      let cls='opt'+(isMulti(cur)?' multi':'');
+      if(sel) cls+=' sel';
+      if(reveal){
+        cls+=' locked';
+        const correct = isMulti(cur)? item.a.includes(i) : item.a===i;
+        if(correct) cls+=' correct';
+        else if(sel) cls+=' wrong';
+      }
+      const mark = isMulti(cur) ? (sel?'✓':'') : letter(i);
+      return `<div class="${cls}" onclick="pick(${i})">
+        <div class="mark">${mark}</div><div class="otext">${o}</div></div>`;
+    }).join('');
+    let expl = reveal ? `<div class="expl"><div class="el">Explanation · correct: ${
+        (isMulti(cur)?item.a.map(letter).join(', '):letter(item.a))
+      }</div><p>${item.e}</p></div>` : '';
+    bodyInner = `
+      <div class="qhead">
+        <span class="tag" style="color:${dom.color};border-color:${dom.color}66">${dom.name}</span>
+        <span class="qnum">Q${cur+1} · ${item.d}</span>
+      </div>
+      ${item.s?`<div class="scen">Scenario · ${SCEN[item.s]}</div>`:''}
+      <div class="qtext">${item.q}</div>
+      ${isMulti(cur)?'<div class="qhint">Select all that apply (2)</div>':''}
+      <div class="opts">${opts}</div>
+      ${expl}`;
+  }
+  document.getElementById('qbody').innerHTML=bodyInner;
+
+  document.getElementById('progLab').textContent=`Question ${cur+1} of ${Q.length}`;
+  document.getElementById('answeredLab').textContent=`${answers.filter((_,i)=>isAnswered(i)).length} answered`;
+  document.getElementById('progFill').style.width=((cur+1)/Q.length*100)+'%';
+  document.getElementById('prevBtn').disabled=cur===0;
+  document.getElementById('nextBtn').disabled=cur===Q.length-1;
+  const fb=document.getElementById('flagBtn');
+  fb.classList.toggle('on',flags[cur]);
+  fb.textContent = flags[cur]?'⚑ Flagged':'⚑ Flag';
+  updateNavGrid();
+}
+
+function pick(i){
+  if(!timed && isAnswered(cur)) return; // locked after answer in study mode
+  if(isMulti(cur)){
+    let a=Array.isArray(answers[cur])?[...answers[cur]]:[];
+    if(a.includes(i)) a=a.filter(x=>x!==i); else a.push(i);
+    // cap at 2 for these items
+    if(a.length>2) a.shift();
+    answers[cur]=a;
+  } else {
+    answers[cur]=i;
+  }
+  render();
+}
+
+function moveStep(pos,dir){
+  const seq=arrange[cur]; if(!seq) return;
+  const t=pos+dir; if(t<0||t>=seq.length) return;
+  [seq[pos],seq[t]]=[seq[t],seq[pos]];
+  touched[cur]=true;
+  render();
+}
+function go(dir){ const n=cur+dir; if(n>=0&&n<Q.length){cur=n;render();window.scrollTo(0,0);} }
+function toggleFlag(){ flags[cur]=!flags[cur]; render(); }
+
+/* ---------- NAVIGATOR ---------- */
+function buildNavGrid(){
+  const g=document.getElementById('navgrid');
+  g.innerHTML=Q.map((_,i)=>`<button onclick="jump(${i})" id="nav${i}">${i+1}</button>`).join('');
+}
+function updateNavGrid(){
+  Q.forEach((_,i)=>{
+    const b=document.getElementById('nav'+i); if(!b)return;
+    b.className='';
+    if(isAnswered(i)) b.classList.add('done');
+    if(flags[i]) b.classList.add('flagged');
+    if(i===cur) b.classList.add('cur');
+  });
+}
+function jump(i){ cur=i; render(); window.scrollTo(0,0); }
+
+/* ---------- SCORING ---------- */
+function correctOn(i){
+  if(isOrder(i)){ return touched[i] && (arrange[i]||[]).join('||')===Q[i].steps.join('||'); }
+  const a=answers[i]; if(a===null)return false;
+  if(isMulti(i)){
+    if(!Array.isArray(a))return false;
+    const want=[...Q[i].a].sort().join(','); const got=[...a].sort().join(',');
+    return want===got;
+  }
+  return a===Q[i].a;
+}
+
+function submitExam(){
+  if(submitted) return;
+  const unanswered=answers.filter((_,i)=>!isAnswered(i)).length;
+  if(!submitted && unanswered>0 && remaining>0){
+    if(!confirm(`${unanswered} question(s) unanswered. Submit anyway?`)) return;
+  }
+  submitted=true;
+  if(timerId) clearInterval(timerId);
+  const correct=Q.reduce((n,_,i)=>n+(correctOn(i)?1:0),0);
+  const pct=correct/Q.length;
+  const scaled=Math.round(100+pct*900);
+  const pass=scaled>=720;
+
+  document.getElementById('exam').classList.add('hide');
+  document.getElementById('results').classList.remove('hide');
+
+  const sn=document.getElementById('scoreNum');
+  sn.textContent=scaled; sn.className='score-num mono '+(pass?'pass':'fail');
+  const v=document.getElementById('verdict'); v.textContent=pass?'PASS':'DID NOT PASS'; v.className='verdict '+(pass?'pass':'fail');
+  document.getElementById('scoreMeta').textContent=`${correct}/${Q.length} correct · ${Math.round(pct*100)}% · pass mark 720`;
+
+  // per-domain
+  const db=document.getElementById('dbreak');
+  db.innerHTML=DOMAINS.map(d=>{
+    const idx=Q.map((q,i)=>({q,i})).filter(x=>x.q.d===d.id).map(x=>x.i);
+    const c=idx.filter(i=>correctOn(i)).length;
+    const p=Math.round(c/idx.length*100);
+    return `<div class="drow">
+      <div class="top"><span>${d.name}</span><span class="dn">${c}/${idx.length} · ${p}%</span></div>
+      <div class="dbar"><i style="width:${p}%;background:${p>=70?d.color:'var(--fail)'}"></i></div>
+    </div>`;
+  }).join('');
+
+  // review
+  document.getElementById('reviewBody').innerHTML=Q.map((item,i)=>{
+    const dom=DOMAINS.find(d=>d.id===item.d);
+    const a=answers[i];
+    const ok=correctOn(i);
+    let optsHtml;
+    if(isOrder(i)){
+      const got=arrange[i]||[];
+      optsHtml=item.steps.map((step,pos)=>{
+        const placed = got[pos]===step;
+        const at = got.indexOf(step);
+        return `<div class="ostep ${placed?'correct':'wrong'}"><div class="onum">${pos+1}</div><div class="otext">${step}${(!placed&&touched[i])?` <span style="color:var(--dim)">(you placed this at ${at>=0?at+1:'—'})</span>`:''}</div></div>`;
+      }).join('');
+    } else {
+      optsHtml=item.opts.map((o,j)=>{
+        const sel=isMulti(i)?(Array.isArray(a)&&a.includes(j)):(a===j);
+        const isC=isMulti(i)?item.a.includes(j):item.a===j;
+        let cls='opt locked'+(isMulti(i)?' multi':'');
+        if(isC)cls+=' correct'; else if(sel)cls+=' wrong';
+        return `<div class="${cls}"><div class="mark">${isMulti(i)?(isC?'✓':(sel?'✗':'')):letter(j)}</div><div class="otext">${o}</div></div>`;
+      }).join('');
+    }
+    return `<div style="margin:26px 0;padding-bottom:8px;border-bottom:1px solid var(--line)">
+      <div class="qhead">
+        <span class="tag" style="color:${dom.color};border-color:${dom.color}66">${dom.name}</span>
+        <span class="qnum">Q${i+1} · ${ok?'<span style=\"color:var(--pass)\">correct</span>':'<span style=\"color:var(--fail)\">'+(isAnswered(i)?'incorrect':'skipped')+'</span>'}</span>
+      </div>
+      ${item.s?`<div class="scen">Scenario · ${SCEN[item.s]}</div>`:''}
+      <div class="qtext" style="font-size:17px">${item.q}</div>
+      <div class="opts">${optsHtml}</div>
+      <div class="expl"><div class="el">Explanation</div><p>${item.e}</p></div>
+    </div>`;
+  }).join('');
+  window.scrollTo(0,0);
+}
+(function initExam(){
+  try{
+    document.title = EXAM.code + ' Mock Exam';
+    const S=(id,txt)=>{const el=document.getElementById(id); if(el) el.textContent=txt;};
+    S('exCode',EXAM.code); S('exTitle',EXAM.title); S('exSub',EXAM.sub);
+    S('mQ',EXAM.items); S('mT',EXAM.minutes+' min');
+    S('exTimedP','All '+EXAM.items+' questions, '+EXAM.minutes+'-minute countdown, answers hidden until you submit — the real sitting.');
+    S('exFoot',EXAM.foot);
+    S('exEyebrow2','Score report · '+EXAM.code+' practice');
+    S('exRevHead','Review all '+EXAM.items+' questions');
+    const tm=document.getElementById('timer'); if(tm) tm.textContent=String(EXAM.minutes)+':00';
+  }catch(e){}
+})();
+</script>

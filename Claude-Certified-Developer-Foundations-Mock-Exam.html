@@ -1,0 +1,493 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CCDV-F Mock Exam</title>
+<style>
+  :root{
+    --ink:#0E141C; --panel:#161F2B; --panel2:#1C2836; --line:#28374A;
+    --text:#DCE4EE; --muted:#8497AD; --dim:#5D6E82;
+    --accent:#59B9FF; --accent-dim:#2C6E9E;
+    --pass:#43D9A3; --fail:#F0736B; --flag:#F5B84C;
+    --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+    --sans:"Inter",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  }
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;450;500;600;700&display=swap');
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:var(--ink);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:860px;margin:0 auto;padding:32px 20px 96px}
+  .mono{font-family:var(--mono)}
+  h1,h2,h3{margin:0;font-weight:600;letter-spacing:-.01em}
+  a{color:var(--accent)}
+  button{font-family:inherit;cursor:pointer;border:none}
+  .btn{background:var(--accent);color:#04121D;font-weight:600;padding:12px 22px;border-radius:8px;font-size:15px;transition:.15s}
+  .btn:hover{filter:brightness(1.08)}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  .btn.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+  .btn.ghost:hover{border-color:var(--accent);color:var(--accent)}
+  .tag{font-family:var(--mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);border:1px solid var(--accent-dim);padding:3px 8px;border-radius:5px;display:inline-block}
+  .hide{display:none!important}
+
+  /* start */
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+  .hero-code{font-family:var(--mono);font-size:56px;font-weight:600;letter-spacing:-.02em;color:var(--text);margin:6px 0 2px}
+  .hero-sub{font-size:19px;color:var(--muted);max-width:640px;margin-top:10px}
+  .meta-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:28px 0}
+  .meta-grid div{background:var(--panel);padding:16px 14px}
+  .meta-grid .k{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim)}
+  .meta-grid .v{font-size:22px;font-weight:600;margin-top:4px}
+  .weights{margin:26px 0}
+  .wrow{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+  .wrow:last-child{border-bottom:none}
+  .wbar{height:7px;background:var(--panel2);border-radius:4px;overflow:hidden;margin-top:6px}
+  .wbar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent-dim),var(--accent))}
+  .wpct{font-family:var(--mono);color:var(--muted);font-size:13px}
+  .modes{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}
+  .mode{flex:1;min-width:220px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px}
+  .mode h3{font-size:16px;margin-bottom:6px}
+  .mode p{color:var(--muted);font-size:13.5px;margin:0 0 14px}
+
+  /* exam header */
+  .exam-bar{position:sticky;top:0;z-index:20;background:rgba(14,20,28,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);margin:-32px -20px 24px;padding:14px 20px;display:flex;align-items:center;gap:16px;justify-content:space-between}
+  .prog{flex:1}
+  .prog .lab{font-family:var(--mono);font-size:12px;color:var(--muted);display:flex;justify-content:space-between;margin-bottom:6px}
+  .track{height:5px;background:var(--panel2);border-radius:3px;overflow:hidden}
+  .track i{display:block;height:100%;background:var(--accent);transition:width .3s}
+  .timer{font-family:var(--mono);font-size:20px;font-weight:600;color:var(--text);min-width:96px;text-align:right}
+  .timer.warn{color:var(--flag)}
+  .timer.crit{color:var(--fail)}
+
+  /* question */
+  .qhead{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+  .qnum{font-family:var(--mono);font-size:13px;color:var(--dim)}
+  .scen{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold,#F5B84C);margin-bottom:8px;font-weight:600}
+  .ostep{display:flex;align-items:center;gap:12px;padding:11px 14px;border:1px solid var(--line);border-radius:9px;margin-bottom:8px;background:#121a24}
+  .ostep.correct{border-color:var(--pass)}
+  .onum{font-family:var(--mono);font-size:13px;color:var(--accent);min-width:20px;text-align:center}
+  .omove{margin-left:auto;display:flex;gap:6px}
+  .omove button{background:#1a2430;color:#e8eef5;border:1px solid var(--line);border-radius:6px;width:30px;height:30px;cursor:pointer;font-size:12px;line-height:1}
+  .omove button:disabled{opacity:.3;cursor:not-allowed}
+  .qtext{font-size:19px;line-height:1.5;font-weight:500;margin-bottom:6px}
+  .qhint{font-family:var(--mono);font-size:12px;color:var(--flag);margin-bottom:18px}
+  .opts{display:flex;flex-direction:column;gap:10px}
+  .opt{display:flex;gap:13px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:14px 16px;transition:.12s}
+  .opt:hover{border-color:var(--accent-dim)}
+  .opt.sel{border-color:var(--accent);background:var(--panel2)}
+  .opt .mark{flex:0 0 24px;height:24px;border:1.5px solid var(--dim);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:1px}
+  .opt.multi .mark{border-radius:6px}
+  .opt.sel .mark{border-color:var(--accent);background:var(--accent);color:#04121D;font-weight:600}
+  .opt .otext{flex:1}
+  /* review states */
+  .opt.correct{border-color:var(--pass);background:rgba(67,217,163,.08)}
+  .opt.correct .mark{border-color:var(--pass);background:var(--pass);color:#04121D}
+  .opt.wrong{border-color:var(--fail);background:rgba(240,115,107,.08)}
+  .opt.wrong .mark{border-color:var(--fail);background:var(--fail);color:#fff}
+  .opt.locked{pointer-events:none}
+  .expl{margin-top:16px;border-left:3px solid var(--accent-dim);background:var(--panel);padding:14px 16px;border-radius:0 8px 8px 0}
+  .expl .el{font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
+  .expl p{margin:0;color:var(--muted);font-size:14px}
+
+  .nav{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:28px}
+  .flagbtn{background:transparent;border:1px solid var(--line);color:var(--muted);padding:9px 14px;border-radius:8px;font-size:13px;font-family:var(--mono)}
+  .flagbtn.on{border-color:var(--flag);color:var(--flag)}
+
+  /* navigator grid */
+  .navgrid{display:grid;grid-template-columns:repeat(12,1fr);gap:7px;margin:22px 0}
+  .navgrid button{aspect-ratio:1;border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:6px;font-family:var(--mono);font-size:12px}
+  .navgrid button.done{border-color:var(--accent-dim);color:var(--text);background:var(--panel2)}
+  .navgrid button.flagged{border-color:var(--flag);color:var(--flag)}
+  .navgrid button.cur{outline:2px solid var(--accent);outline-offset:1px}
+
+  /* results */
+  .score-hero{text-align:center;padding:36px 0 8px}
+  .score-num{font-family:var(--mono);font-size:84px;font-weight:600;line-height:1}
+  .score-num.pass{color:var(--pass)} .score-num.fail{color:var(--fail)}
+  .score-den{font-family:var(--mono);font-size:22px;color:var(--dim)}
+  .verdict{font-size:22px;font-weight:600;margin-top:10px}
+  .verdict.pass{color:var(--pass)} .verdict.fail{color:var(--fail)}
+  .score-meta{color:var(--muted);margin-top:6px;font-family:var(--mono);font-size:13px}
+  .dbreak{margin:30px 0}
+  .drow{padding:12px 0;border-bottom:1px solid var(--line)}
+  .drow .top{display:flex;justify-content:space-between;font-size:14px;margin-bottom:7px}
+  .drow .dn{color:var(--muted);font-family:var(--mono);font-size:12px}
+  .dbar{height:8px;background:var(--panel2);border-radius:4px;overflow:hidden}
+  .dbar i{display:block;height:100%}
+  .rev-head{display:flex;justify-content:space-between;align-items:center;margin:34px 0 10px}
+  .footer{color:var(--dim);font-size:12px;line-height:1.7;margin-top:40px;border-top:1px solid var(--line);padding-top:18px}
+  @media(max-width:620px){
+    .meta-grid{grid-template-columns:repeat(2,1fr)}
+    .hero-code{font-size:42px}
+    .navgrid{grid-template-columns:repeat(8,1fr)}
+    .score-num{font-size:64px}
+  }
+</style>
+
+<div class="wrap">
+  <!-- ============ START ============ -->
+  <section id="start">
+    <div class="eyebrow">Anthropic · Claude Partner Network · Unofficial practice</div>
+    <div class="hero-code" id="exCode">CCDV-F</div>
+    <h1 style="font-size:24px;font-weight:600" id="exTitle">Claude Certified Developer — Foundations</h1>
+    <p class="hero-sub" id="exSub">Fifty-three questions across the eight domains of the official blueprint, in the exam's code and API developer style. Scaled scoring out of 1,000; 720 to pass.</p>
+
+    <div class="meta-grid">
+      <div><div class="k">Questions</div><div class="v" id="mQ">60</div></div>
+      <div><div class="k">Time limit</div><div class="v" id="mT">120 min</div></div>
+      <div><div class="k">Pass score</div><div class="v">720</div></div>
+      <div><div class="k">Scale</div><div class="v">100–1000</div></div>
+    </div>
+
+    <h3 style="font-size:15px;margin-bottom:4px">Domain weighting</h3>
+    <div class="weights" id="weights"></div>
+
+    <div class="modes">
+      <div class="mode">
+        <h3>Timed exam</h3>
+        <p id="exTimedP">All 60 questions, 120-minute countdown, answers hidden until you submit — the real sitting.</p>
+        <button class="btn" onclick="start(true)">Start timed exam</button>
+      </div>
+      <div class="mode">
+        <h3>Study mode</h3>
+        <p>No clock. Feedback and explanation reveal the moment you answer each question.</p>
+        <button class="btn ghost" onclick="start(false)">Start study mode</button>
+      </div>
+    </div>
+
+    <div class="footer" id="exFoot">
+      Independent study material, not affiliated with or endorsed by Anthropic. Questions are original and written against the published domain structure and the objective list on the official score report; they are not reproductions of live exam items. Real exam format per Exam Guide v1.0 (July 2026): 60 questions, 120 minutes, scaled 100–1000, 720 to pass, delivered via Pearson VUE.
+    </div>
+  </section>
+
+  <!-- ============ EXAM ============ -->
+  <section id="exam" class="hide">
+    <div class="exam-bar">
+      <div class="prog">
+        <div class="lab"><span id="progLab">Question 1 of 60</span><span id="answeredLab">0 answered</span></div>
+        <div class="track"><i id="progFill" style="width:0"></i></div>
+      </div>
+      <div class="timer" id="timer">120:00</div>
+    </div>
+
+    <div id="qbody"></div>
+
+    <div class="nav">
+      <button class="btn ghost" id="prevBtn" onclick="go(-1)">← Previous</button>
+      <button class="flagbtn" id="flagBtn" onclick="toggleFlag()">⚑ Flag</button>
+      <button class="btn" id="nextBtn" onclick="go(1)">Next →</button>
+    </div>
+
+    <div class="navgrid" id="navgrid"></div>
+    <div style="text-align:center">
+      <button class="btn" id="submitBtn" onclick="submitExam()">Submit exam</button>
+    </div>
+  </section>
+
+  <!-- ============ RESULTS ============ -->
+  <section id="results" class="hide">
+    <div class="score-hero">
+      <div class="eyebrow" id="exEyebrow2">Score report · CCAR-F practice</div>
+      <div class="score-num mono" id="scoreNum">—</div>
+      <div class="score-den">/ 1000 &nbsp;·&nbsp; pass 720</div>
+      <div class="verdict" id="verdict"></div>
+      <div class="score-meta" id="scoreMeta"></div>
+    </div>
+    <h3 style="font-size:15px">Test objectives — percent correct by domain</h3>
+    <div class="dbreak" id="dbreak"></div>
+    <div class="rev-head">
+      <h3 style="font-size:17px" id="exRevHead">Review all 60 questions</h3>
+      <button class="btn ghost" onclick="location.reload()">Retake</button>
+    </div>
+    <div id="reviewBody"></div>
+  </section>
+</div>
+
+<script>
+const EXAM = {"code":"CCDV-F","title":"Claude Certified Developer — Foundations","items":53,"minutes":120,"sub":"Fifty-three questions across the eight domains of the official blueprint, in the exam's code and API developer style. Scaled scoring out of 1,000; 720 to pass.","foot":"Independent study material, not affiliated with or endorsed by Anthropic. Questions are original and written against the published domain blueprint and objectives; they are not reproductions of live exam items. Real exam format per Exam Guide v1.0 (July 2026): 53 questions, 120 minutes, scaled 100–1000, 720 to pass, exam fee $125 USD, delivered via Pearson VUE."};
+/* ---------- DOMAINS ---------- */
+const DOMAINS = [{"id":"D1","name":"Agents & Workflows","weight":14.7,"color":"#59B9FF"},{"id":"D2","name":"Applications & Integration","weight":33.1,"color":"#43D9A3"},{"id":"D3","name":"Claude Code","weight":3.1,"color":"#C08CFF"},{"id":"D4","name":"Eval, Testing & Debugging","weight":2.6,"color":"#F5B84C"},{"id":"D5","name":"Model Selection & Optimization","weight":16.8,"color":"#F0736B"},{"id":"D6","name":"Prompt & Context Engineering","weight":11,"color":"#7FD1FF"},{"id":"D7","name":"Security & Safety","weight":8.1,"color":"#E8B4FF"},{"id":"D8","name":"Tools & MCPs","weight":10.6,"color":"#FF9F7F"}];
+const SCEN = {};
+
+/* ---------- QUESTIONS ----------
+   opts: array of strings. answer: index (single) or array of indices (multi).
+   multi:true renders checkboxes and requires the exact set.
+*/
+const Q = [{"d": "D1", "q": "Your task has a fixed, known sequence of steps with no branching. Should you build an agent or a workflow?", "opts": ["A workflow, since the steps are predictable and can be scripted", "An agent, because agents are always more capable", "An agent, so it can choose steps you already know", "Neither; run one prompt and hope it covers everything"], "a": 0, "e": "Use a workflow when steps are known and fixed; reserve agents for tasks whose path depends on runtime findings."}, {"d": "D1", "q": "In a manager/supervisor multi-agent design, what is the manager agent's role?", "opts": ["Decompose the goal, delegate to subagents, and integrate their results", "Do all the work itself and never delegate", "Let subagents coordinate among themselves without oversight", "Run subagents but discard their outputs"], "a": 0, "e": "A manager/supervisor decomposes, delegates, and aggregates, coordinating subagents rather than doing everything or ceding control."}, {"d": "D1", "q": "Why introduce subagents into an otherwise single-agent task?", "opts": ["To isolate context and specialize work, improving reliability on complex tasks", "To increase token cost for its own sake", "Because one agent can never call tools", "To avoid writing any prompts"], "a": 0, "e": "Subagents improve execution by isolating context and specializing roles, which helps on complex, multi-part tasks."}, {"d": "D1", "q": "You need an agent to deterministically block a destructive shell command regardless of what the model decides. What mechanism fits?", "opts": ["A hook that intercepts and blocks the action before it runs", "A system-prompt instruction telling the model not to do it", "A few-shot example of refusing the command", "A comment in the code asking for caution"], "a": 0, "e": "Hooks provide deterministic enforcement for guardrails; prompt-based approaches are probabilistic and can fail."}, {"d": "D1", "q": "Which is a core agent design pattern for tool use?", "opts": ["A loop that sends messages, executes requested tools, and feeds results back", "A single request that never inspects the response", "Calling every tool once in a fixed order regardless of need", "Avoiding tools and pasting data into the prompt"], "a": 0, "e": "The tool-use loop — call, execute tools, append results, repeat — is the fundamental agentic pattern."}, {"d": "D1", "q": "When is an agentic framework such as LangGraph or PydanticAI most useful?", "opts": ["When you need structured orchestration of multi-step agent workflows", "When you have a single one-shot prompt with no tools", "Only for training new models", "Only for static websites"], "a": 0, "e": "Such frameworks provide abstractions for orchestrating multi-step agents and workflows; they add little for a one-shot prompt."}, {"d": "D1", "q": "You are implementing a basic agentic tool-use loop. The steps below are listed out of order:<ol style=\"margin:10px 0 6px 22px;padding:0\"><li>If stop_reason is tool_use, execute the requested tools</li><li>When stop_reason is end_turn, return the final answer</li><li>Send the messages to Claude</li><li>Append the tool results to the conversation</li><li>Inspect stop_reason on the response</li></ol>In which order should they be carried out?", "opts": ["3 → 5 → 1 → 4 → 2", "3 → 1 → 5 → 4 → 2", "3 → 5 → 1 → 2 → 4", "1 → 3 → 5 → 4 → 2"], "a": 0, "e": "The loop sends the messages, inspects stop_reason, executes the tools when it is tool_use, appends the tool results, and returns the final answer once stop_reason is end_turn. Executing tools before inspecting stop_reason, or returning before appending results, breaks the loop."}, {"d": "D1", "q": "What is a key trade-off between self-hosted and Anthropic-hosted agent deployment?", "opts": ["Control and responsibility versus managed operation and less maintenance", "There is no difference between them", "Self-hosted always costs nothing", "Managed hosting cannot run agents"], "a": 0, "e": "Self-hosting gives more control but more operational burden; managed hosting reduces maintenance at the cost of some control."}, {"d": "D2", "q": "You must process 10,000 documents overnight for a non-urgent report where cost is the priority. Which approach fits best?", "opts": ["Use the Message Batches API for large asynchronous workloads at reduced cost", "Send every request synchronously in parallel to finish fastest", "Lower max_tokens on synchronous calls to cut cost", "Switch to the smallest model regardless of output quality"], "a": 0, "e": "The Batches API suits latency-tolerant, high-volume jobs at lower cost. Parallel synchronous calls do not cut per-token cost, and blindly reducing tokens or model size does not address the batch-versus-realtime trade-off."}, {"d": "D2", "q": "A chat UI feels sluggish because users wait for the whole response. What improves perceived responsiveness?", "opts": ["Stream the response so tokens appear as they are generated", "Increase max_tokens so the reply is longer", "Disable the model's tools to speed it up", "Batch the request for later processing"], "a": 0, "e": "Streaming surfaces tokens as they are produced, improving perceived latency for interactive UIs."}, {"d": "D2", "q": "A transient network error occasionally fails an API call in production. What is the right handling?", "opts": ["Retry with exponential backoff for transient errors, and surface non-transient ones", "Crash the whole process on any error", "Silently ignore all errors and return empty output", "Retry forever with no limit or backoff"], "a": 0, "e": "Robust integrations retry transient failures with backoff while distinguishing and surfacing non-transient errors; silent failures and infinite retries are anti-patterns."}, {"d": "D2", "q": "Your app must accept both text and PDFs/images as input to Claude. What does this require?", "opts": ["Sending multi-format input using the appropriate content blocks", "Converting everything to plain text first, always", "Only supporting text, since Claude cannot read images", "Uploading each image to a file host and pasting its URL as text"], "a": 0, "e": "Claude accepts multi-format input (text, images, PDFs) via the appropriate content blocks in the request."}, {"d": "D2", "q": "An app resends the same long instruction prefix on every request. Which mechanic reduces cost and latency?", "opts": ["Prompt caching of the repeated prefix", "Sending the prefix twice for reliability", "Removing the instructions entirely", "Switching the SDK language"], "a": 0, "e": "Prompt caching reuses a repeated prefix across requests, cutting cost and time-to-first-token."}, {"d": "D2", "q": "Your organization runs Claude through a third-party cloud vendor. What is a correct expectation?", "opts": ["Claude can be invoked through supported third-party platforms with similar core mechanics", "Third-party access changes the fundamentals of the Messages API entirely", "Only direct API access can call tools", "Third-party access disables streaming permanently"], "a": 0, "e": "Claude can be invoked via supported third-party vendors; the core Messages mechanics (messages, tools, streaming) remain broadly consistent."}, {"d": "D2", "q": "How should you decide between the realtime Messages API and the Batches API for a workload?", "opts": ["Realtime when a user waits on the result; batch for latency-tolerant bulk jobs", "Always batch to save money", "Always realtime to be safe", "Choose based on which SDK you like"], "a": 0, "e": "Selection turns on latency tolerance: realtime for blocking, user-facing work; batch for high-volume, non-urgent jobs."}, {"d": "D2", "q": "You are integrating Claude's API over HTTP. Which foundational skill is most directly relevant?", "opts": ["Working with REST endpoints and JSON request/response bodies", "Writing shader code for GPUs", "Designing relational database indexes", "Configuring DNS zones"], "a": 0, "e": "API integration rests on REST and JSON fundamentals for forming requests and parsing responses."}, {"d": "D2", "q": "Your service must issue many independent Claude calls without blocking the event loop. What technique fits?", "opts": ["Asynchronous/concurrent requests so calls do not block each other", "Strictly sequential blocking calls one at a time", "A single call that returns everything at once", "Routing the calls through the Batches API instead"], "a": 0, "e": "Asynchronous programming lets independent calls run concurrently without blocking, improving throughput."}, {"d": "D2", "q": "How should prompts and Claude configuration be managed in a real codebase?", "opts": ["Under version control alongside the code, integrated into the SDLC", "Pasted ad hoc into chats and never saved", "Kept only in one developer's head", "Emailed around when they change"], "a": 0, "e": "Prompts and configuration belong in version control and the SDLC like any other code artifact, for reproducibility and review."}, {"d": "D2", "q": "A teammate opens a PR changing a core prompt template. What is the appropriate practice?", "opts": ["Review the change like any code, checking behavior and adding/adjusting tests", "Merge prompt changes without review since they are just text", "Ban all prompt changes to avoid risk", "Review only code files, never prompts"], "a": 0, "e": "Prompt changes affect behavior and warrant code review and testing just like other code."}, {"d": "D2", "q": "You must refactor a large legacy integration that many features depend on. What is a sound approach?", "opts": ["Refactor incrementally behind tests, preserving behavior at each step", "Rewrite everything at once with no tests", "Avoid refactoring and let it decay", "Delete the tests to move faster"], "a": 0, "e": "Large-scale refactoring is safest done incrementally behind tests that preserve behavior."}, {"d": "D2", "q": "The same instruction behaves differently in Claude Code versus the API. What explains this most directly?", "opts": ["Different interfaces interpret and apply instructions and context differently", "The model is broken on one of them", "Instructions are ignored entirely by one interface", "Only the API can follow instructions"], "a": 0, "e": "Claude interprets instructions differently across interfaces (Claude Code, Desktop, claude.ai, API, SDKs); designs must account for this."}, {"d": "D2", "q": "You are designing the input schema for a tool Claude will call. What makes it robust?", "opts": ["Clear field names, types, and required/optional markers matching real inputs", "As many free-form string fields as possible", "No schema; accept anything", "A schema that changes shape on every call"], "a": 0, "e": "Well-designed tool schemas define clear typed fields and required/optional markers so the model produces valid, parseable calls."}, {"d": "D2", "q": "A long-lived app accumulates stale state across many user turns. What practice helps?", "opts": ["Session hygiene: reset or scope state so old context does not leak in", "Keep every turn forever in one growing session", "Share one global session across all users", "Never clear state under any circumstances"], "a": 0, "e": "Session hygiene — scoping and resetting state appropriately — prevents context leakage and drift in long-lived apps."}, {"d": "D2", "q": "Your app relies on several plugins with version dependencies. What should you manage carefully?", "opts": ["Plugin versions and dependencies so behavior stays predictable across updates", "Nothing; plugins never change behavior", "Only the plugin names, not versions", "Removing all plugins to avoid the issue"], "a": 0, "e": "Plugin management includes tracking versions and dependencies so updates do not silently change behavior."}, {"d": "D2", "q": "Why pin a specific Claude model version for a production feature?", "opts": ["To avoid unexpected behavior changes when new model versions ship", "Because newer versions never differ in behavior", "To make responses slower on purpose", "Pinning has no effect on behavior"], "a": 0, "e": "Version pinning guards against breaking behavior changes across releases; you upgrade deliberately after re-evaluating."}, {"d": "D2", "q": "Which practice is most essential when integrating Claude into a production application?", "opts": ["Error handling with retries and backoff for transient failures, plus streaming or async patterns suited to the workload", "Hard-coding a single API key shared by all users to simplify authentication", "Skipping automated tests so the integration ships faster", "Assuming every request succeeds and omitting failure handling"], "a": 0, "e": "Production integrations need robust error handling (retries with backoff) and workload-appropriate streaming/async patterns. Shared keys, skipped tests, and ignoring failures are risks, not essentials."}, {"d": "D3", "q": "Team-wide coding standards must apply to everyone on a repo. Where do they belong in Claude Code?", "opts": ["In a project-level CLAUDE.md (or .claude/CLAUDE.md) committed to the repo", "In each developer's user-level ~/.claude/CLAUDE.md only", "In a chat message repeated each session", "Nowhere; rely on defaults"], "a": 0, "e": "Project-level CLAUDE.md is version-controlled and shared with the team; user-level config is personal and not shared."}, {"d": "D3", "q": "You need Claude Code to run non-interactively inside a script or CI job. Which feature is designed for that?", "opts": ["Headless mode, running a prompt and exiting without interactive input", "Interactive mode with a human at the prompt", "A GUI-only workflow", "Disabling all commands"], "a": 0, "e": "Headless mode runs Claude Code non-interactively for scripts and CI, unlike the interactive session."}, {"d": "D4", "q": "An app returns wrong answers, and you must tell whether the fault is in your integration code or the model's output. What technique isolates it?", "opts": ["Trace analysis of inputs, tool calls, and responses to locate where it breaks", "Guessing and swapping the model first", "Rewriting the whole app blindly", "Assuming the model is always at fault"], "a": 0, "e": "Trace analysis follows the request, tool calls, and responses to isolate whether the failure originates in the integration layer or the model output."}, {"d": "D5", "q": "Which statement about LLM fundamentals is correct?", "opts": ["Output is non-deterministic and generated token by token within a context window", "Output is fully deterministic for identical inputs always", "There is no limit to how much context fits", "The model plans the entire answer before emitting any token"], "a": 0, "e": "LLMs generate tokens sequentially, are generally non-deterministic, and operate within a bounded context window."}, {"d": "D5", "q": "A hard reasoning task underperforms with default settings. Which option most directly helps?", "opts": ["Enabling extended/adaptive thinking or a higher effort level", "Raising temperature so the model explores more reasoning paths", "Removing the system prompt", "Sending the request more times"], "a": 0, "e": "Extended/adaptive thinking (or higher effort) gives the model more room to reason on hard tasks."}, {"d": "D5", "q": "Which model choice best fits a simple, high-volume, latency-sensitive task?", "opts": ["Haiku, the fast lightweight tier, for straightforward high-volume work", "Opus for every request regardless of task", "The largest available model to be safe", "Whichever model is newest this week"], "a": 0, "e": "Match the tier to the task: Haiku suits fast, simple, high-volume work, while Opus is for the most demanding reasoning."}, {"d": "D5", "q": "How should you reason about the quality/latency/cost trade-off across model tiers?", "opts": ["Pick the smallest tier that meets the task's quality and latency needs", "Always maximize quality regardless of cost", "Always minimize cost regardless of quality", "Ignore the trade-off and choose arbitrarily"], "a": 0, "e": "Right-sizing selects the least expensive/fastest tier that still meets quality and latency requirements."}, {"d": "D5", "q": "You need to control spend on a token-heavy feature. What is a sound first step?", "opts": ["Track token usage and model the cost drivers before optimizing", "Turn off logging so you cannot see the cost", "Assume cost is fixed and unchangeable", "Increase output length to be thorough"], "a": 0, "e": "Cost management starts with tracking token usage and modeling drivers, then targeting the biggest contributors."}, {"d": "D5", "q": "A workload repeats a large shared prompt prefix across many calls. Which technique cuts cost most directly?", "opts": ["Prompt caching, reusing the cached prefix across calls", "Sending the prefix twice for safety", "Removing the shared instructions", "Switching programming languages"], "a": 0, "e": "Prompt caching (and cache check-pointing) reuses repeated prefixes to reduce cost and latency."}, {"d": "D5", "q": "For a task where one clear example dramatically improves formatting, which prompting style applies?", "opts": ["Single-shot (one example) prompting", "Zero-shot with no examples at all", "Multi-shot with dozens of examples always", "No prompt, relying on defaults"], "a": 0, "e": "Providing one example is single-shot prompting; the number of examples (zero/single/multi) is chosen to fit the task."}, {"d": "D5", "q": "Which approach reduces cost while preserving quality on a large workload?", "opts": ["Cache a large repeated prompt prefix and right-size the model tier to the task's needs", "Always use the most expensive model for consistency", "Send each request several times and keep one result at random", "Increase output length on every request to be thorough"], "a": 0, "e": "Caching a repeated prefix and right-sizing the model tier cut cost without hurting quality. Over-provisioning the model and issuing redundant calls do the opposite."}, {"d": "D5", "q": "A new model version subtly changes outputs and breaks a downstream parser. What is the sound practice?", "opts": ["Pin the model version and re-evaluate before adopting a new one", "Auto-upgrade to the newest version immediately everywhere", "Assume versions never change behavior", "Disable the parser rather than test upgrades"], "a": 0, "e": "Because releases can introduce breaking behavior changes, pin versions and re-evaluate before upgrading."}, {"d": "D6", "q": "Long agent runs accumulate verbose tool output and start to drift. Which context-engineering practice helps most?", "opts": ["Prune tool outputs and compact the context as it grows", "Keep appending everything and never compact", "Restart from scratch on every single turn", "Increase temperature to refresh behavior"], "a": 0, "e": "Preventing context drift/bloat uses output pruning and compaction to keep the working context relevant."}, {"d": "D6", "q": "A behavioral rule keeps getting overridden by user messages. Where should durable instructions live?", "opts": ["In the system prompt, separated from user-provided content", "In each user message, repeated every turn", "In a code comment the model cannot see", "Nowhere; rely on the model to infer it"], "a": 0, "e": "Durable instructions belong in the system prompt, distinct from user input, so they apply consistently."}, {"d": "D6", "q": "Downstream code needs strictly structured output from Claude. What is the most reliable technique?", "opts": ["Use tool_use with a JSON schema and read the structured result", "Ask for JSON in prose and parse whatever comes back", "Prefill a brace and hope the rest is valid", "Rely on the model to remember the format"], "a": 0, "e": "tool_use with a JSON schema guarantees schema-conforming output, unlike prose requests or prefill nudges."}, {"d": "D6", "q": "A verbose exploration step is polluting the main agent's context. What context-engineering technique helps?", "opts": ["Isolate it in a subagent and return only a concise summary", "Merge everything into the main context for completeness", "Delete the main context to make room", "Disable tools during exploration"], "a": 0, "e": "Context isolation via subagents keeps verbose intermediate work out of the main context, returning only what is needed."}, {"d": "D6", "q": "Your parser occasionally crashes on Claude output that looks confident but is malformed. What is the right posture?", "opts": ["Parse defensively and validate output rather than trusting it blindly", "Trust confident-looking output and skip validation", "Crash the app so users notice", "Assume output is always well-formed"], "a": 0, "e": "Output handling requires defensive parsing, validation, and healthy skepticism toward confident-sounding responses."}, {"d": "D6", "q": "User-provided text is concatenated directly into your prompt. What should you add?", "opts": ["Input sanitization and clear separation of untrusted input from instructions", "Nothing; user input is always safe", "More user input to dilute any problem", "A request asking users to behave"], "a": 0, "e": "Sanitizing input and separating untrusted content from instructions reduces prompt-injection and parsing risks."}, {"d": "D7", "q": "An agent summarizes user-submitted pages; one hides text telling it to ignore instructions and reveal its system prompt. Which mitigation is most effective?", "opts": ["Treat page content as untrusted, isolate it from instructions, and gate sensitive actions with guardrails or hooks", "Raise temperature so behavior is harder to predict", "Add a system-prompt line asking users not to include malicious instructions", "Switch to a larger model that follows instructions more reliably"], "a": 0, "e": "Prompt injection is addressed by isolating untrusted content from trusted instructions and enforcing least-privilege guardrails; temperature is irrelevant, a polite request is not a control, and a more instruction-following model can be more susceptible."}, {"d": "D7", "q": "Where should API keys and secrets live in a Claude application?", "opts": ["In a secrets manager or environment variables, never hard-coded in source", "Hard-coded in the source and committed to the repo", "Pasted into prompts so Claude can use them", "In a public config file for convenience"], "a": 0, "e": "Secrets belong in a secrets manager or environment variables, never hard-coded, committed, or placed in prompts."}, {"d": "D7", "q": "You must ensure an agent can never run a destructive command even if the model is manipulated. What enforces this?", "opts": ["A hook that intercepts and blocks the command deterministically", "A polite instruction in the system prompt", "A few-shot example of declining", "A code comment warning about the risk"], "a": 0, "e": "Hooks enforce guardrails deterministically, which prompt-based measures cannot guarantee under manipulation."}, {"d": "D7", "q": "Which practice best protects data in a Claude application?", "opts": ["Keep secrets out of prompts and source using a secrets manager, and minimize or redact PII not needed for the task", "Log full prompts, including any credentials, to make debugging easier", "Send all user data to the model for maximum context", "Store API keys in a public config file for convenience"], "a": 0, "e": "Protecting data means keeping secrets out of prompts and source (using a secrets manager) and minimizing or redacting PII. Logging credentials and over-sharing data are leakage risks."}, {"d": "D8", "q": "A team needs Claude to call an internal inventory REST API, reusable across several apps and maintained independently. Which approach fits best?", "opts": ["Build an MCP server exposing the inventory operations as tools", "Hard-code the inventory logic into each app's system prompt", "Paste current inventory data into the context on every request", "Rely on a built-in tool, since built-ins can reach any internal API"], "a": 0, "e": "An MCP server exposes reusable tools multiple apps can share and maintain independently. Hard-coding is not reusable, pasting data gives no live access, and built-in tools do not automatically reach arbitrary internal APIs."}, {"d": "D8", "q": "The model keeps mis-calling a custom tool. Which improvement most reliably helps selection?", "opts": ["A clear tool description stating purpose, inputs, and when to use it", "A shorter, vaguer description to save tokens", "Renaming the tool to something random", "Adding more unrelated tools alongside it"], "a": 0, "e": "Tool descriptions are the primary signal for selection; clear purpose, inputs, and usage guidance improve reliability."}, {"d": "D8", "q": "You must choose among a built-in tool, a custom tool, a Skill, and an MCP server for a capability. What should drive the choice?", "opts": ["The use case: reusability, maintenance, and where the capability should live", "Always pick MCP regardless of the need", "Always pick a built-in tool for everything", "Whichever you implemented most recently"], "a": 0, "e": "Selecting among built-in tools, custom tools, Skills, and MCPs is a trade-off driven by the use case, reusability, and maintenance."}, {"d": "D8", "q": "In MCP, what is the difference between resources and tools?", "opts": ["Resources expose content/data to read; tools perform actions the agent invokes", "They are identical and interchangeable", "Resources run code; tools only store text", "Tools expose data; resources take destructive actions"], "a": 0, "e": "MCP resources expose readable content/catalogs, while tools perform actions; distinguishing them shapes efficient integration."}, {"d": "D8", "q": "You are implementing a custom tool for Claude. The steps below are listed out of order:<ol style=\"margin:10px 0 6px 22px;padding:0\"><li>Implement the handler that performs the work</li><li>Handle the tool_use request in the agent loop</li><li>Define the function schema (name, description, parameters)</li><li>Return the tool_result to the model</li><li>Register the tool with the client or agent</li></ol>In which order should they be carried out?", "opts": ["3 → 1 → 5 → 2 → 4", "1 → 3 → 5 → 2 → 4", "3 → 1 → 2 → 5 → 4", "3 → 1 → 5 → 4 → 2"], "a": 0, "e": "A custom tool is defined by its schema, implemented as a handler, registered with the client or agent, invoked when the model returns tool_use, and its tool_result returned to the model. Implementing before defining the schema, or returning a result before handling tool_use, is out of order."}];
+
+/* ---------- STATE ---------- */
+let cur=0, timed=true, remaining=EXAM.minutes*60, timerId=null, submitted=false;
+const answers = Q.map(()=>null);   // number | number[] | null
+const flags = Q.map(()=>false);
+const arrange = Q.map(()=>null);
+const touched = Q.map(()=>false);
+
+/* ---------- START SCREEN ---------- */
+const MAXW=Math.max(...DOMAINS.map(d=>d.weight));
+(function renderWeights(){
+  const el=document.getElementById('weights');
+  el.innerHTML = DOMAINS.map(d=>`
+    <div class="wrow">
+      <div>
+        <div style="font-size:14px">${d.name}</div>
+        <div class="wbar"><i style="width:${d.weight/MAXW*100}%;background:linear-gradient(90deg,${d.color}55,${d.color})"></i></div>
+      </div>
+      <div class="wpct">${d.weight}%</div>
+    </div>`).join('');
+})();
+
+/* Shuffle option order per session so there is no fixed position tell.
+   Remaps the correct-answer index/indices to the new order. */
+function shuffleOptions(){
+  Q.forEach(item=>{
+    if(item.type==='order') return;
+    const n=item.opts.length;
+    const order=[...Array(n).keys()];
+    for(let i=n-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]];}
+    item.opts=order.map(i=>item.opts[i]);
+    const back={}; order.forEach((old,neu)=>back[old]=neu);
+    item.a = Array.isArray(item.a) ? item.a.map(x=>back[x]).sort((a,b)=>a-b) : back[item.a];
+  });
+}
+
+function start(isTimed){
+  shuffleOptions();
+  Q.forEach((item,i)=>{ if(item.type==='order'){ const s=[...item.steps]; for(let k=s.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[s[k],s[j]]=[s[j],s[k]];} arrange[i]=s; } });
+  timed=isTimed;
+  document.getElementById('start').classList.add('hide');
+  document.getElementById('exam').classList.remove('hide');
+  buildNavGrid();
+  if(timed){ startTimer(); } else { document.getElementById('timer').textContent='study'; document.getElementById('timer').style.fontSize='15px'; }
+  render();
+  window.scrollTo(0,0);
+}
+
+function startTimer(){
+  const t=document.getElementById('timer');
+  timerId=setInterval(()=>{
+    remaining--;
+    const m=String(Math.floor(remaining/60)).padStart(2,'0');
+    const s=String(remaining%60).padStart(2,'0');
+    t.textContent=`${m}:${s}`;
+    t.classList.toggle('warn',remaining<=600&&remaining>120);
+    t.classList.toggle('crit',remaining<=120);
+    if(remaining<=0){ clearInterval(timerId); submitExam(); }
+  },1000);
+}
+
+/* ---------- QUESTION RENDER ---------- */
+function isMulti(i){ return !!Q[i].multi; }
+function isOrder(i){ return Q[i].type==='order'; }
+function isAnswered(i){
+  if(isOrder(i)) return touched[i];
+  const a=answers[i];
+  if(a===null) return false;
+  return isMulti(i) ? a.length>0 : true;
+}
+function letter(n){ return String.fromCharCode(65+n); }
+
+function render(){
+  const item=Q[cur];
+  const dom=DOMAINS.find(d=>d.id===item.d);
+  const a=answers[cur];
+  const reveal = !timed && isAnswered(cur); // study mode reveals after answering
+
+  let bodyInner;
+  if(isOrder(cur)){
+    const seq = arrange[cur] || item.steps;
+    const rev = !timed && touched[cur];
+    const rows = seq.map((step,pos)=>{
+      let cls='ostep';
+      if(rev){ cls += (item.steps[pos]===step ? ' correct':' wrong'); }
+      return `<div class="${cls}">
+        <div class="onum">${pos+1}</div>
+        <div class="otext">${step}</div>
+        <div class="omove">
+          <button onclick="moveStep(${pos},-1)" ${pos===0?'disabled':''}>▲</button>
+          <button onclick="moveStep(${pos},1)" ${pos===seq.length-1?'disabled':''}>▼</button>
+        </div></div>`;
+    }).join('');
+    const oexpl = rev ? `<div class="expl"><div class="el">Explanation · correct order shown above</div><p>${item.e}</p></div>` : '';
+    bodyInner = `
+      <div class="qhead">
+        <span class="tag" style="color:${dom.color};border-color:${dom.color}66">${dom.name}</span>
+        <span class="qnum">Q${cur+1} · ${item.d} · ordering</span>
+      </div>
+      ${item.s?`<div class="scen">Scenario · ${SCEN[item.s]}</div>`:''}
+      <div class="qtext">${item.q}</div>
+      <div class="qhint">Use the ▲ ▼ buttons to arrange the steps into the correct order</div>
+      <div class="opts">${rows}</div>
+      ${oexpl}`;
+  } else {
+    let opts=item.opts.map((o,i)=>{
+      const sel = isMulti(cur) ? (Array.isArray(a)&&a.includes(i)) : (a===i);
+      let cls='opt'+(isMulti(cur)?' multi':'');
+      if(sel) cls+=' sel';
+      if(reveal){
+        cls+=' locked';
+        const correct = isMulti(cur)? item.a.includes(i) : item.a===i;
+        if(correct) cls+=' correct';
+        else if(sel) cls+=' wrong';
+      }
+      const mark = isMulti(cur) ? (sel?'✓':'') : letter(i);
+      return `<div class="${cls}" onclick="pick(${i})">
+        <div class="mark">${mark}</div><div class="otext">${o}</div></div>`;
+    }).join('');
+    let expl = reveal ? `<div class="expl"><div class="el">Explanation · correct: ${
+        (isMulti(cur)?item.a.map(letter).join(', '):letter(item.a))
+      }</div><p>${item.e}</p></div>` : '';
+    bodyInner = `
+      <div class="qhead">
+        <span class="tag" style="color:${dom.color};border-color:${dom.color}66">${dom.name}</span>
+        <span class="qnum">Q${cur+1} · ${item.d}</span>
+      </div>
+      ${item.s?`<div class="scen">Scenario · ${SCEN[item.s]}</div>`:''}
+      <div class="qtext">${item.q}</div>
+      ${isMulti(cur)?'<div class="qhint">Select all that apply (2)</div>':''}
+      <div class="opts">${opts}</div>
+      ${expl}`;
+  }
+  document.getElementById('qbody').innerHTML=bodyInner;
+
+  document.getElementById('progLab').textContent=`Question ${cur+1} of ${Q.length}`;
+  document.getElementById('answeredLab').textContent=`${answers.filter((_,i)=>isAnswered(i)).length} answered`;
+  document.getElementById('progFill').style.width=((cur+1)/Q.length*100)+'%';
+  document.getElementById('prevBtn').disabled=cur===0;
+  document.getElementById('nextBtn').disabled=cur===Q.length-1;
+  const fb=document.getElementById('flagBtn');
+  fb.classList.toggle('on',flags[cur]);
+  fb.textContent = flags[cur]?'⚑ Flagged':'⚑ Flag';
+  updateNavGrid();
+}
+
+function pick(i){
+  if(!timed && isAnswered(cur)) return; // locked after answer in study mode
+  if(isMulti(cur)){
+    let a=Array.isArray(answers[cur])?[...answers[cur]]:[];
+    if(a.includes(i)) a=a.filter(x=>x!==i); else a.push(i);
+    // cap at 2 for these items
+    if(a.length>2) a.shift();
+    answers[cur]=a;
+  } else {
+    answers[cur]=i;
+  }
+  render();
+}
+
+function moveStep(pos,dir){
+  const seq=arrange[cur]; if(!seq) return;
+  const t=pos+dir; if(t<0||t>=seq.length) return;
+  [seq[pos],seq[t]]=[seq[t],seq[pos]];
+  touched[cur]=true;
+  render();
+}
+function go(dir){ const n=cur+dir; if(n>=0&&n<Q.length){cur=n;render();window.scrollTo(0,0);} }
+function toggleFlag(){ flags[cur]=!flags[cur]; render(); }
+
+/* ---------- NAVIGATOR ---------- */
+function buildNavGrid(){
+  const g=document.getElementById('navgrid');
+  g.innerHTML=Q.map((_,i)=>`<button onclick="jump(${i})" id="nav${i}">${i+1}</button>`).join('');
+}
+function updateNavGrid(){
+  Q.forEach((_,i)=>{
+    const b=document.getElementById('nav'+i); if(!b)return;
+    b.className='';
+    if(isAnswered(i)) b.classList.add('done');
+    if(flags[i]) b.classList.add('flagged');
+    if(i===cur) b.classList.add('cur');
+  });
+}
+function jump(i){ cur=i; render(); window.scrollTo(0,0); }
+
+/* ---------- SCORING ---------- */
+function correctOn(i){
+  if(isOrder(i)){ return touched[i] && (arrange[i]||[]).join('||')===Q[i].steps.join('||'); }
+  const a=answers[i]; if(a===null)return false;
+  if(isMulti(i)){
+    if(!Array.isArray(a))return false;
+    const want=[...Q[i].a].sort().join(','); const got=[...a].sort().join(',');
+    return want===got;
+  }
+  return a===Q[i].a;
+}
+
+function submitExam(){
+  if(submitted) return;
+  const unanswered=answers.filter((_,i)=>!isAnswered(i)).length;
+  if(!submitted && unanswered>0 && remaining>0){
+    if(!confirm(`${unanswered} question(s) unanswered. Submit anyway?`)) return;
+  }
+  submitted=true;
+  if(timerId) clearInterval(timerId);
+  const correct=Q.reduce((n,_,i)=>n+(correctOn(i)?1:0),0);
+  const pct=correct/Q.length;
+  const scaled=Math.round(100+pct*900);
+  const pass=scaled>=720;
+
+  document.getElementById('exam').classList.add('hide');
+  document.getElementById('results').classList.remove('hide');
+
+  const sn=document.getElementById('scoreNum');
+  sn.textContent=scaled; sn.className='score-num mono '+(pass?'pass':'fail');
+  const v=document.getElementById('verdict'); v.textContent=pass?'PASS':'DID NOT PASS'; v.className='verdict '+(pass?'pass':'fail');
+  document.getElementById('scoreMeta').textContent=`${correct}/${Q.length} correct · ${Math.round(pct*100)}% · pass mark 720`;
+
+  // per-domain
+  const db=document.getElementById('dbreak');
+  db.innerHTML=DOMAINS.map(d=>{
+    const idx=Q.map((q,i)=>({q,i})).filter(x=>x.q.d===d.id).map(x=>x.i);
+    const c=idx.filter(i=>correctOn(i)).length;
+    const p=Math.round(c/idx.length*100);
+    return `<div class="drow">
+      <div class="top"><span>${d.name}</span><span class="dn">${c}/${idx.length} · ${p}%</span></div>
+      <div class="dbar"><i style="width:${p}%;background:${p>=70?d.color:'var(--fail)'}"></i></div>
+    </div>`;
+  }).join('');
+
+  // review
+  document.getElementById('reviewBody').innerHTML=Q.map((item,i)=>{
+    const dom=DOMAINS.find(d=>d.id===item.d);
+    const a=answers[i];
+    const ok=correctOn(i);
+    let optsHtml;
+    if(isOrder(i)){
+      const got=arrange[i]||[];
+      optsHtml=item.steps.map((step,pos)=>{
+        const placed = got[pos]===step;
+        const at = got.indexOf(step);
+        return `<div class="ostep ${placed?'correct':'wrong'}"><div class="onum">${pos+1}</div><div class="otext">${step}${(!placed&&touched[i])?` <span style="color:var(--dim)">(you placed this at ${at>=0?at+1:'—'})</span>`:''}</div></div>`;
+      }).join('');
+    } else {
+      optsHtml=item.opts.map((o,j)=>{
+        const sel=isMulti(i)?(Array.isArray(a)&&a.includes(j)):(a===j);
+        const isC=isMulti(i)?item.a.includes(j):item.a===j;
+        let cls='opt locked'+(isMulti(i)?' multi':'');
+        if(isC)cls+=' correct'; else if(sel)cls+=' wrong';
+        return `<div class="${cls}"><div class="mark">${isMulti(i)?(isC?'✓':(sel?'✗':'')):letter(j)}</div><div class="otext">${o}</div></div>`;
+      }).join('');
+    }
+    return `<div style="margin:26px 0;padding-bottom:8px;border-bottom:1px solid var(--line)">
+      <div class="qhead">
+        <span class="tag" style="color:${dom.color};border-color:${dom.color}66">${dom.name}</span>
+        <span class="qnum">Q${i+1} · ${ok?'<span style=\"color:var(--pass)\">correct</span>':'<span style=\"color:var(--fail)\">'+(isAnswered(i)?'incorrect':'skipped')+'</span>'}</span>
+      </div>
+      ${item.s?`<div class="scen">Scenario · ${SCEN[item.s]}</div>`:''}
+      <div class="qtext" style="font-size:17px">${item.q}</div>
+      <div class="opts">${optsHtml}</div>
+      <div class="expl"><div class="el">Explanation</div><p>${item.e}</p></div>
+    </div>`;
+  }).join('');
+  window.scrollTo(0,0);
+}
+(function initExam(){
+  try{
+    document.title = EXAM.code + ' Mock Exam';
+    const S=(id,txt)=>{const el=document.getElementById(id); if(el) el.textContent=txt;};
+    S('exCode',EXAM.code); S('exTitle',EXAM.title); S('exSub',EXAM.sub);
+    S('mQ',EXAM.items); S('mT',EXAM.minutes+' min');
+    S('exTimedP','All '+EXAM.items+' questions, '+EXAM.minutes+'-minute countdown, answers hidden until you submit — the real sitting.');
+    S('exFoot',EXAM.foot);
+    S('exEyebrow2','Score report · '+EXAM.code+' practice');
+    S('exRevHead','Review all '+EXAM.items+' questions');
+    const tm=document.getElementById('timer'); if(tm) tm.textContent=String(EXAM.minutes)+':00';
+  }catch(e){}
+})();
+</script>
