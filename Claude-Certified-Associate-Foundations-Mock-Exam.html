@@ -87,10 +87,11 @@
   .expl p{margin:0;color:var(--muted);font-size:14px}
 
   .nav{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:28px}
+  .exitbtn{flex:none;font-family:var(--mono);font-size:13px;color:var(--muted);background:transparent;border:1px solid var(--line);border-radius:10px;padding:8px 14px;cursor:pointer;white-space:nowrap;transition:.15s}
+  .exitbtn:hover{border-color:var(--accent);color:var(--accent)}
+  .vtag{display:inline-block;font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:none;color:var(--accent);background:rgba(89,185,255,.14);border:1px solid var(--accent);border-radius:999px;padding:3px 9px;margin-left:10px;vertical-align:middle}
   .flagbtn{background:transparent;border:1px solid var(--line);color:var(--muted);padding:9px 14px;border-radius:8px;font-size:13px;font-family:var(--mono)}
   .flagbtn.on{border-color:var(--flag);color:var(--flag)}
-  .exitbtn{background:transparent;border:1px solid var(--line);color:var(--muted);padding:8px 12px;border-radius:8px;font-size:12px;font-family:var(--mono);white-space:nowrap}
-  .exitbtn:hover{border-color:var(--fail);color:var(--fail)}
 
   /* navigator grid */
   .navgrid{display:grid;grid-template-columns:repeat(12,1fr);gap:7px;margin:22px 0}
@@ -126,7 +127,7 @@
 <div class="wrap">
   <!-- ============ START ============ -->
   <section id="start">
-    <div class="eyebrow">Anthropic · Claude Partner Network · Unofficial practice</div>
+    <div class="eyebrow">Anthropic · Claude Partner Network · Unofficial practice<span class="vtag">v2</span></div>
     <div class="hero-code" id="exCode">CCAO-F</div>
     <h1 style="font-size:24px;font-weight:600" id="exTitle">Claude Certified Associate — Foundations</h1>
     <p class="hero-sub" id="exSub">Sixty questions across the seven domains of the official blueprint, in the exam's applied business-judgment style. Scaled scoring out of 1,000; 720 to pass.</p>
@@ -162,7 +163,7 @@
   <!-- ============ EXAM ============ -->
   <section id="exam" class="hide">
     <div class="exam-bar">
-      <button class="exitbtn" id="exitBtn" onclick="goHome()" title="Back to start screen">← Exit</button>
+      <button class="exitbtn" id="exitBtn" onclick="goHome()" title="Exit to start screen">← Exit</button>
       <div class="prog">
         <div class="lab"><span id="progLab">Question 1 of 60</span><span id="answeredLab">0 answered</span></div>
         <div class="track"><i id="progFill" style="width:0"></i></div>
@@ -174,7 +175,7 @@
 
     <div class="nav">
       <button class="btn ghost" id="prevBtn" onclick="go(-1)">← Previous</button>
-      <button class="flagbtn" id="flagBtn" onclick="toggleFlag()">⚑ Flag</button>
+      <button class="flagbtn" id="flagBtn" onclick="toggleFlag()">⚑ Mark for review</button>
       <button class="btn" id="nextBtn" onclick="go(1)">Next →</button>
     </div>
 
@@ -197,8 +198,10 @@
     <div class="dbreak" id="dbreak"></div>
     <div class="rev-head">
       <h3 style="font-size:17px" id="exRevHead">Review all 60 questions</h3>
-      <button class="btn ghost" onclick="goHome()">← Back to start</button>
-      <button class="btn ghost" onclick="location.reload()">Retake</button>
+      <div style="display:flex;gap:10px">
+        <button class="btn ghost" onclick="goHome()">← Exit</button>
+        <button class="btn ghost" onclick="location.reload()">Retake</button>
+      </div>
     </div>
     <div id="reviewBody"></div>
   </section>
@@ -357,7 +360,7 @@ function render(){
   document.getElementById('nextBtn').disabled=cur===Q.length-1;
   const fb=document.getElementById('flagBtn');
   fb.classList.toggle('on',flags[cur]);
-  fb.textContent = flags[cur]?'⚑ Flagged':'⚑ Flag';
+  fb.textContent = flags[cur]?'⚑ Marked for review':'⚑ Mark for review';
   updateNavGrid();
 }
 
