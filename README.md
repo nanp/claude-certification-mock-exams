@@ -44,6 +44,17 @@ Or visit the landing page:
 
 **https://nanp.github.io/claude-certification-mock-exams/**
 
+## Additional Resources
+
+**Official Score Reports** — personal score reports shared to give an overview of the certification objectives and topic areas covered by each exam.
+
+- Architect Foundations (CCAR-F)
+- Architect Professional (CCAR-P)
+- Developer Foundations (CCDV-F)
+- Associate Foundations (CCAO-F)
+
+Available via the landing page.
+
 ## Related Article
 
 **A Practical Guide to the Anthropic Claude Certifications**
