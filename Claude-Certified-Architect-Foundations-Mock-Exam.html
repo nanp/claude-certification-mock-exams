@@ -299,7 +299,9 @@ function isMulti(i){ return !!Q[i].multi; }
 function isAnswered(i){
   const a=answers[i];
   if(a===null) return false;
-  return isMulti(i) ? a.length>0 : true;
+  // Multi-select is only complete once the required number of options are chosen
+  // (avoids study-mode reveal/lock after the first click).
+  return isMulti(i) ? (Array.isArray(a) && a.length===Q[i].a.length) : true;
 }
 function letter(n){ return String.fromCharCode(65+n); }
 
