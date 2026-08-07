@@ -55,4 +55,4 @@ https://www.linkedin.com/pulse/practical-guide-anthropic-claude-certifications-n
 If you find an issue or have suggestions for improvement, feel free to
 open an issue or submit a pull request.
 
-Happy learning!
+Happy learning! :)
