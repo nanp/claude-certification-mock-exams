@@ -54,6 +54,7 @@ Or visit the landing page:
 - Associate Foundations (CCAO-F)
 
 Available via the landing page.
+- [Free timed practice exams for all four Claude certifications](https://youraidept.com/network/claude-certification-practice-exam): full-length mocks drawn to the published domain weights (60/120 for CCAR-F and CCAO-F, 53/120 for CCDV-F, 63/120 for CCAR-P), scored against the 720 pass mark with a per-domain breakdown and explanations. 333 original questions, no sign-up, from YAID, a Claude Partner Network firm.
 
 ## Related Article
 
