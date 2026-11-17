@@ -1,0 +1,12 @@
+{
+  "name": "Claude Certification Mock Exams",
+  "user": "ubuntu",
+  "install": "bash .cursor/install.sh",
+  "start": "bash .cursor/start.sh",
+  "ports": [
+    {
+      "name": "Static site",
+      "port": 8080
+    }
+  ]
+}
